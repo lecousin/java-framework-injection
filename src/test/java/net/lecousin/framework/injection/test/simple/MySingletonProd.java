@@ -1,4 +1,4 @@
-package net.lecousin.framework.injection.test;
+package net.lecousin.framework.injection.test.simple;
 
 public class MySingletonProd implements IMySingleton {
 

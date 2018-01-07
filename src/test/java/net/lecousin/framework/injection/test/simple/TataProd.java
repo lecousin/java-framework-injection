@@ -1,8 +1,8 @@
-package net.lecousin.framework.injection.test;
+package net.lecousin.framework.injection.test.simple;
 
-public class TataDev {
+public class TataProd {
 
-	public TataDev(String str, int i) {
+	public TataProd(String str, int i) {
 		this.str = str;
 		this.i = i;
 	}
