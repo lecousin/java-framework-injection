@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
+
+	<Singleton type="net.lecousin.framework.injection.test.IMySingleton">
+		<class name="net.lecousin.framework.injection.test.MySingletonDev">
+			<property name="env" value="DEV"/>
+			<attribute name="myString" value="I'm in development"/>
+			<attribute name="myInteger" value="1"/>
+		</class>
+		<class name="net.lecousin.framework.injection.test.MySingletonProd">
+			<property name="env" value="PROD"/>
+			<attribute name="myString" value="I'm in production"/>
+			<attribute name="myInteger" value="2"/>
+		</class>
+	</Singleton>
+	
+	<Factory type="net.lecousin.framework.injection.test.IProvided">
+		<class name="net.lecousin.framework.injection.test.ProvidedDev">
+			<property name="env" value="DEV"/>
+		</class>
+		<class name="net.lecousin.framework.injection.test.ProvidedProd">
+			<property name="env" value="PROD"/>
+		</class>
+	</Factory>
+
+	<Singleton id="toto" type="net.lecousin.framework.injection.test.IToto">
+		<class name="net.lecousin.framework.injection.test.TotoDev">
+			<property name="env" value="DEV"/>
+			<attribute name="tata" class="net.lecousin.framework.injection.test.TataDev">
+				<parameter value="this is the string in dev"/>
+				<parameter value="51"/>
+			</attribute>
+		</class>
+		<class name="net.lecousin.framework.injection.test.TotoProd">
+			<property name="env" value="PROD"/>
+			<attribute name="tata" class="net.lecousin.framework.injection.test.TataProd">
+				<parameter value="this is the string in prod"/>
+				<parameter value="52"/>
+			</attribute>
+		</class>
+	</Singleton>
+
+	<Singleton id="titi" type="net.lecousin.framework.injection.test.ITiti">
+		<class name="net.lecousin.framework.injection.test.TitiDev">
+			<property name="env" value="DEV"/>
+			<attribute name="toto" ref="toto"/>
+			<attribute name="tata" fromSingleton="toto" fromAttribute="tata"/>
+		</class>
+		<class name="net.lecousin.framework.injection.test.TitiProd">
+			<property name="env" value="PROD"/>
+			<attribute name="toto" ref="toto"/>
+			<attribute name="tata" fromSingleton="toto" fromAttribute="tata"/>
+		</class>
+	</Singleton>
+	
+</Injection>

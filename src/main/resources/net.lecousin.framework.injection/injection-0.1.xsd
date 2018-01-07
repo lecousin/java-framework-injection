@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1"
+	targetNamespace="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1"
+	elementFormDefault="qualified">
+	
+	<xsd:element name="Injection" type="Injection"/>
+
+	<xsd:complexType name="Injection">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="property" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="name" type="xsd:string"/>
+					<xsd:attribute name="value" type="xsd:string"/>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="Singleton" type="ObjectProvider" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Factory" type="ObjectProvider" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="scan-package" type="ScanPackage" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="import" type="Import" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="ObjectProvider">
+		<xsd:sequence>
+			<xsd:element name="class" type="InstanceProvider" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="type" type="xsd:string" use="optional"/>
+		<xsd:attribute name="id" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="InstanceProvider">
+		<xsd:complexContent>
+			<xsd:extension base="Conditioned">
+				<xsd:sequence>
+					<xsd:element name="attribute" type="ObjectAttribute" minOccurs="0" maxOccurs="unbounded"/>
+					<xsd:element name="init-method" type="Method" minOccurs="0" maxOccurs="1"/>
+				</xsd:sequence>
+				<xsd:attribute name="name" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="PropertyMatch">
+		<xsd:attribute name="name" type="xsd:string"/>
+		<xsd:attribute name="value" type="xsd:string"/>
+	</xsd:complexType>
+	<xsd:complexType name="Conditioned">
+		<xsd:sequence>
+			<xsd:element name="property" type="PropertyMatch" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ObjectAttribute">
+		<xsd:sequence>
+			<!-- If attribute class is specified, those are parameters of the constructor -->
+			<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="value" type="xsd:string"/>
+				</xsd:complexType>
+			</xsd:element>
+			<!-- If attribute class is specified, those are attributes to set -->
+			<xsd:element name="attribute" type="ObjectAttribute" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string"/>
+		<!-- To inject a fixed value such as a string or an integer -->
+		<xsd:attribute name="value" type="xsd:string" use="optional"/>
+		<!-- To instantiate a type -->
+		<xsd:attribute name="class" type="xsd:string" use="optional"/>
+		<!-- Reference to a singleton or a factory -->
+		<xsd:attribute name="ref" type="xsd:string" use="optional"/>
+		<!-- To take it from an existing singleton -->
+		<xsd:attribute name="fromSingleton" type="xsd:string" use="optional"/>
+		<xsd:attribute name="fromAttribute" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+	<xsd:complexType name="Method">
+		<xsd:sequence>
+			<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="value" type="xsd:string"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="name" type="xsd:string"/>
+	</xsd:complexType>
+	<xsd:complexType name="ScanPackage">
+		<xsd:complexContent>
+			<xsd:extension base="Conditioned">
+				<xsd:attribute name="package" type="xsd:string"/>
+				<xsd:attribute name="singleton" type="xsd:boolean" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="Import">
+		<xsd:complexContent>
+			<xsd:extension base="Conditioned">
+				<xsd:attribute name="file" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>
