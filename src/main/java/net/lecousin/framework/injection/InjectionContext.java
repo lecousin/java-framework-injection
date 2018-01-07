@@ -31,10 +31,12 @@ public class InjectionContext {
 		this.parent = parent;
 	}
 	
+	/** Set a property. */
 	public void setProperty(String name, String value) {
 		properties.put(name, value);
 	}
 	
+	/** Return a property or null if not set. */
 	public String getProperty(String name) {
 		return properties.get(name);
 	}

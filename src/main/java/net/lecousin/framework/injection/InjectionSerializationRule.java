@@ -8,8 +8,14 @@ import net.lecousin.framework.io.serialization.SerializationContext;
 import net.lecousin.framework.io.serialization.TypeDefinition;
 import net.lecousin.framework.io.serialization.rules.SerializationRule;
 
+/**
+ * Serialization rule for dependencies injection:
+ * during serialization, injectable objects are not serialized (they will be injected again on deserialization).
+ * during deserialization, each time an object is instantiated, its dependencies are injected.
+ */
 public class InjectionSerializationRule implements SerializationRule {
 
+	/** Constructor. */
 	public InjectionSerializationRule(InjectionContext context) {
 		this.context = context;
 	}

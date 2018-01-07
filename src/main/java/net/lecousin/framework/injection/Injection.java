@@ -30,7 +30,9 @@ public final class Injection {
 	private Injection() { /* no instance */ }
 	
 	/** Create an object to be injected. */
-	public static Object create(InjectionContext ctx, Class<?> clazz, ObjectMethod initMethod, List<ObjectAttribute> attrs) throws InjectionException {
+	public static Object create(
+		InjectionContext ctx, Class<?> clazz, ObjectMethod initMethod, List<ObjectAttribute> attrs
+	) throws InjectionException {
 		return create(ctx, clazz, new LinkedList<>(), initMethod, attrs);
 	}
 
@@ -83,7 +85,9 @@ public final class Injection {
 	
 	/** Create an object from a string value. */
 	@SuppressWarnings("unchecked")
-	public static Object createObjectFromString(Class<?> type, Type genericType, String value, Annotation[] annotations) throws InjectionException {
+	public static Object createObjectFromString(
+		Class<?> type, Type genericType, String value, Annotation[] annotations
+	) throws InjectionException {
 		if ("null".equals(value))
 			return null;
 		if (String.class.equals(type))
@@ -186,7 +190,8 @@ public final class Injection {
 		}
 		Method setter = ClassUtil.getSetter(cl, name);
 		if (setter != null && (setter.getModifiers() & Modifier.PUBLIC) == 0) {
-			Object o = attribute.create(ctx, setter.getParameterTypes()[0], setter.getGenericParameterTypes()[0], setter.getAnnotations());
+			Object o = attribute.create(
+				ctx, setter.getParameterTypes()[0], setter.getGenericParameterTypes()[0], setter.getAnnotations());
 			if (o != null)
 				try { setter.invoke(instance, o); }
 				catch (IllegalAccessException e) {
@@ -230,6 +235,7 @@ public final class Injection {
 		}
 	}
 	
+	/** Call a method on an instance. */
 	public static void call(Object instance, ObjectMethod method) throws Exception {
 		Method m = ClassUtil.getMethod(instance.getClass(), method.getName(), method.getParameters().size());
 		if (m == null) return;
@@ -242,6 +248,7 @@ public final class Injection {
 		m.invoke(instance, objects);
 	}
 	
+	/** Resolve properties in the given value. */
 	public static String resolveProperties(InjectionContext ctx, Application app, String value) {
 		if (value == null) return null;
 		int pos = 0;
@@ -249,7 +256,7 @@ public final class Injection {
 		while ((i = value.indexOf("${", pos)) >= 0) {
 			int j = value.indexOf('}', i + 2);
 			if (j < 0) break;
-			String name = value.substring(i+2, j);
+			String name = value.substring(i + 2, j);
 			String s = ctx.getProperty(name);
 			if (s == null) s = app.getProperty(name);
 			if (s != null) {
@@ -262,11 +269,13 @@ public final class Injection {
 		return value;
 	}
 
+	/** Resolve properties in the given value. */
 	public static String resolveProperties(InjectionContext ctx, Application app, CharSequence value) {
 		if (value == null) return null;
 		return resolveProperties(ctx, app, value.toString());
 	}
 	
+	/** Scan a package to find injectable objects. */
 	public static void scanPackage(InjectionContext ctx, Application app, String pkgName, boolean singletons) throws Exception {
 		List<File> files = app.getLibrariesManager().getLibrariesLocations();
 		for (File f : files) {
@@ -277,7 +286,9 @@ public final class Injection {
 		}
 	}
 	
-	private static void scanDirectoryPackage(InjectionContext ctx, Application app, String pkgName, boolean singletons, File classDir) throws Exception {
+	private static void scanDirectoryPackage(
+		InjectionContext ctx, Application app, String pkgName, boolean singletons, File classDir
+	) throws Exception {
 		String pkgPath = pkgName.replace('.', '/');
 		File dir = new File(classDir, pkgPath);
 		if (!dir.exists()) return;

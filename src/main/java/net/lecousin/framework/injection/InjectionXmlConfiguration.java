@@ -23,8 +23,8 @@ import net.lecousin.framework.properties.Property;
 import net.lecousin.framework.util.ClassUtil;
 import net.lecousin.framework.util.UnprotectedStringBuffer;
 import net.lecousin.framework.xml.XMLStreamEvents;
-import net.lecousin.framework.xml.XMLStreamReader;
 import net.lecousin.framework.xml.XMLStreamEvents.ElementContext;
+import net.lecousin.framework.xml.XMLStreamReader;
 
 /** Utility class to configure an InjectionContext from an XML file. */
 public final class InjectionXmlConfiguration {
@@ -316,6 +316,7 @@ public final class InjectionXmlConfiguration {
 		return new ObjectAttribute(name.asString(), null, null, fromSingleton, fromAttr);
 	}
 	
+	/** Read an object method from an XML stream (version 0-1). */
 	public static ObjectMethod readObjectMethod01(XMLStreamReader xml) throws Exception {
 		UnprotectedStringBuffer name = xml.getAttributeValueByLocalName("name");
 		if (name == null) throw new Exception("Missing attribute name on element '" + xml.event.text.asString() + "'");

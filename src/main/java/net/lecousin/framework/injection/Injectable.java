@@ -15,10 +15,13 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface Injectable {
 
+	/** Type this class can be injected for. */
 	Class<?> value();
 	
+	/** Indicates if a single instance should be instantiated. */
 	boolean singleton() default true;
 	
+	/** Identifier, or empty if none. */
 	String id() default "";
 	
 }

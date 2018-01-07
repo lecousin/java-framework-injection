@@ -15,6 +15,7 @@ import net.lecousin.framework.properties.Property;
 @Target({ElementType.TYPE})
 public @interface InjectableWhen {
 
+	/** List of properties and values to match. */
 	Property[] value();
 	
 }
