@@ -24,6 +24,7 @@ import net.lecousin.framework.math.IntegerUnit;
 import net.lecousin.framework.math.IntegerUnit.UnitConversionException;
 import net.lecousin.framework.properties.Property;
 import net.lecousin.framework.util.ClassUtil;
+import net.lecousin.framework.util.Provider;
 
 /** Utility methods for injection. */
 public final class Injection {
@@ -369,7 +370,16 @@ public final class Injection {
 		if (logger.debug())
 			logger.debug("Injectable class found: " + cl.getName());
 		if (singleton)
-			ctx.add(new Singleton(type, create(ctx, cl, null, new ArrayList<>(0)), id.length() > 0 ? id : null));
+			ctx.add(new SingletonOnDemand(type, new Provider<Object>() {
+				@Override
+				public Object provide() {
+					try {
+						return create(ctx, cl, null, new ArrayList<>(0));
+					} catch (InjectionException e) {
+						throw new RuntimeException("Unable to create singleton to be injected", e);
+					}
+				}
+			}, id.length() > 0 ? id : null));
 		else
 			ctx.add(new Factory(type, cl, null, new ArrayList<>(0), id.length() > 0 ? id : null));
 	}
