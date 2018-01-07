@@ -38,6 +38,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertTrue(mySingleton instanceof MySingletonDev);
 		Assert.assertEquals("I'm in development", mySingleton.getMyString());
 		Assert.assertEquals(1, mySingleton.getMyInteger());
+		Assert.assertTrue(mySingleton == ctx.getObject(IMySingleton.class));
 		
 		// PROD
 		app.setProperty("env", "PROD");
@@ -49,6 +50,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertTrue(mySingleton instanceof MySingletonProd);
 		Assert.assertEquals("I'm in production", mySingleton.getMyString());
 		Assert.assertEquals(2, mySingleton.getMyInteger());
+		Assert.assertTrue(mySingleton == ctx.getObject(IMySingleton.class));
 	}
 	
 	@Test(timeout=30000)
@@ -63,6 +65,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		IProvided myObject = ctx.getObject(IProvided.class);
 		Assert.assertTrue(myObject instanceof ProvidedDev);
 		Assert.assertEquals("DEV", myObject.getEnv());
+		Assert.assertTrue(myObject != ctx.getObject(IProvided.class));
 		
 		// PROD
 		app.setProperty("env", "PROD");
@@ -73,6 +76,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		myObject = ctx.getObject(IProvided.class);
 		Assert.assertTrue(myObject instanceof ProvidedProd);
 		Assert.assertEquals("PROD", myObject.getEnv());
+		Assert.assertTrue(myObject != ctx.getObject(IProvided.class));
 	}
 	
 	@Test(timeout=30000)
