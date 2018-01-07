@@ -17,87 +17,74 @@ import net.lecousin.framework.injection.test.annotations.Interface2;
 import net.lecousin.framework.injection.test.annotations.Interface3;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestInjectionAnnotations extends LCCoreAbstractTest {
 
-	@Test(timeout=30000)
-	public void test1() throws Exception {
+	@BeforeClass
+	public static void load() throws Exception {
 		Application app = LCCore.getApplication();
 		// DEV
 		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-annotations.xml");
+		ctxDev = app.getInstance(InjectionContext.class);
+		ctxDev = new InjectionContext(ctxDev);
+		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctxDev, "test-injection-annotations.xml");
 		cfg.blockThrow(0);
-		Interface1 interf = ctx.getObject(Interface1.class);
-		Assert.assertTrue(interf instanceof Impl1Dev);
-		Assert.assertEquals(1, interf.value());
-		Assert.assertTrue(interf == ctx.getObject(Interface1.class));
-		
 		// PROD
 		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-annotations.xml");
+		ctxProd = app.getInstance(InjectionContext.class);
+		ctxProd = new InjectionContext(ctxProd);
+		cfg = InjectionXmlConfiguration.configure(ctxProd, "test-injection-annotations.xml");
 		cfg.blockThrow(0);
-		interf = ctx.getObject(Interface1.class);
+	}
+	
+	private static InjectionContext ctxDev, ctxProd;
+	
+	@Test(timeout=30000)
+	public void test1() throws Exception {
+		// DEV
+		Interface1 interf = ctxDev.getObject(Interface1.class);
+		Assert.assertTrue(interf instanceof Impl1Dev);
+		Assert.assertEquals(1, interf.value());
+		Assert.assertTrue(interf == ctxDev.getObject(Interface1.class));
+		
+		// PROD
+		interf = ctxProd.getObject(Interface1.class);
 		Assert.assertTrue(interf instanceof Impl1Prod);
 		Assert.assertEquals(2, interf.value());
-		Assert.assertTrue(interf == ctx.getObject(Interface1.class));
+		Assert.assertTrue(interf == ctxProd.getObject(Interface1.class));
 	}
 
 	@Test(timeout=30000)
 	public void test2() throws Exception {
-		Application app = LCCore.getApplication();
 		// DEV
-		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-annotations.xml");
-		cfg.blockThrow(0);
-		Interface2 interf = ctx.getObject(Interface2.class);
+		Interface2 interf = ctxDev.getObject(Interface2.class);
 		Assert.assertTrue(interf instanceof Impl2Dev);
 		Assert.assertEquals(101, interf.value());
-		interf = ctx.getObject(Interface2.class);
+		interf = ctxDev.getObject(Interface2.class);
 		Assert.assertTrue(interf instanceof Impl2Dev);
 		Assert.assertEquals(102, interf.value());
 		
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-annotations.xml");
-		cfg.blockThrow(0);
-		interf = ctx.getObject(Interface2.class);
+		interf = ctxProd.getObject(Interface2.class);
 		Assert.assertTrue(interf instanceof Impl2Prod);
 		Assert.assertEquals(201, interf.value());
-		interf = ctx.getObject(Interface2.class);
+		interf = ctxProd.getObject(Interface2.class);
 		Assert.assertTrue(interf instanceof Impl2Prod);
 		Assert.assertEquals(202, interf.value());
 	}
 
 	@Test(timeout=30000)
 	public void test3() throws Exception {
-		Application app = LCCore.getApplication();
 		// DEV
-		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-annotations.xml");
-		cfg.blockThrow(0);
-		Interface3 interf = ctx.getObject(Interface3.class);
+		Interface3 interf = ctxDev.getObject(Interface3.class);
 		Assert.assertTrue(interf instanceof Impl3Dev);
 		Assert.assertEquals(10, interf.value());
 		Assert.assertEquals(1, interf.getInterface().value());
 		
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-annotations.xml");
-		cfg.blockThrow(0);
-		interf = ctx.getObject(Interface3.class);
+		interf = ctxProd.getObject(Interface3.class);
 		Assert.assertTrue(interf instanceof Impl3Prod);
 		Assert.assertEquals(20, interf.value());
 		Assert.assertEquals(2, interf.getInterface().value());

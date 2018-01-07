@@ -21,86 +21,73 @@ import net.lecousin.framework.injection.test.simple.TotoProd;
 import net.lecousin.framework.injection.test.simple.WithDependencies;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestInjectionSimple extends LCCoreAbstractTest {
 
-	@Test(timeout=30000)
-	public void testSingleton() throws Exception {
+	@BeforeClass
+	public static void load() throws Exception {
 		Application app = LCCore.getApplication();
 		// DEV
 		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
+		ctxDev = app.getInstance(InjectionContext.class);
+		ctxDev = new InjectionContext(ctxDev);
+		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctxDev, "test-injection-simple.xml");
 		cfg.blockThrow(0);
-		IMySingleton mySingleton = ctx.getObject(IMySingleton.class);
+		// PROD
+		app.setProperty("env", "PROD");
+		ctxProd = app.getInstance(InjectionContext.class);
+		ctxProd = new InjectionContext(ctxProd);
+		cfg = InjectionXmlConfiguration.configure(ctxProd, "test-injection-simple.xml");
+		cfg.blockThrow(0);
+	}
+	
+	private static InjectionContext ctxDev, ctxProd;
+	
+	@Test(timeout=30000)
+	public void testSingleton() throws Exception {
+		// DEV
+		IMySingleton mySingleton = ctxDev.getObject(IMySingleton.class);
 		Assert.assertTrue(mySingleton instanceof MySingletonDev);
 		Assert.assertEquals("I'm in development", mySingleton.getMyString());
 		Assert.assertEquals(1, mySingleton.getMyInteger());
-		Assert.assertTrue(mySingleton == ctx.getObject(IMySingleton.class));
+		Assert.assertTrue(mySingleton == ctxDev.getObject(IMySingleton.class));
 		
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		mySingleton = ctx.getObject(IMySingleton.class);
+		mySingleton = ctxProd.getObject(IMySingleton.class);
 		Assert.assertTrue(mySingleton instanceof MySingletonProd);
 		Assert.assertEquals("I'm in production", mySingleton.getMyString());
 		Assert.assertEquals(2, mySingleton.getMyInteger());
-		Assert.assertTrue(mySingleton == ctx.getObject(IMySingleton.class));
+		Assert.assertTrue(mySingleton == ctxProd.getObject(IMySingleton.class));
 	}
 	
 	@Test(timeout=30000)
 	public void testFactory() throws Exception {
-		Application app = LCCore.getApplication();
 		// DEV
-		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		IProvided myObject = ctx.getObject(IProvided.class);
+		IProvided myObject = ctxDev.getObject(IProvided.class);
 		Assert.assertTrue(myObject instanceof ProvidedDev);
 		Assert.assertEquals("DEV", myObject.getEnv());
-		Assert.assertTrue(myObject != ctx.getObject(IProvided.class));
+		Assert.assertTrue(myObject != ctxDev.getObject(IProvided.class));
 		
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		myObject = ctx.getObject(IProvided.class);
+		myObject = ctxProd.getObject(IProvided.class);
 		Assert.assertTrue(myObject instanceof ProvidedProd);
 		Assert.assertEquals("PROD", myObject.getEnv());
-		Assert.assertTrue(myObject != ctx.getObject(IProvided.class));
+		Assert.assertTrue(myObject != ctxProd.getObject(IProvided.class));
 	}
 	
 	@Test(timeout=30000)
 	public void testSingletonById() throws Exception {
-		Application app = LCCore.getApplication();
 		// DEV
-		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		Object mySingleton = ctx.getObjectById("toto");
+		Object mySingleton = ctxDev.getObjectById("toto");
 		Assert.assertTrue(mySingleton instanceof TotoDev);
 		TataDev dev = ((TotoDev)mySingleton).getTata();
 		Assert.assertEquals("this is the string in dev", dev.getStr());
 		Assert.assertEquals(51, dev.getI());
 		
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		mySingleton = ctx.getObjectById("toto");
+		mySingleton = ctxProd.getObjectById("toto");
 		Assert.assertTrue(mySingleton instanceof TotoProd);
 		TataProd prod = ((TotoProd)mySingleton).getTata();
 		Assert.assertEquals("this is the string in prod", prod.getStr());
@@ -109,14 +96,8 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 	
 	@Test(timeout=30000)
 	public void testSingletonWithIjectedAttribute() throws Exception {
-		Application app = LCCore.getApplication();
 		// DEV
-		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		Object mySingleton = ctx.getObjectById("titi");
+		Object mySingleton = ctxDev.getObjectById("titi");
 		Assert.assertTrue(mySingleton instanceof TitiDev);
 		TitiDev dev = (TitiDev)mySingleton;
 		Assert.assertEquals("this is the string in dev", dev.getTata().getStr());
@@ -127,12 +108,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertEquals(51, tataDev.getI());
 
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		mySingleton = ctx.getObjectById("titi");
+		mySingleton = ctxProd.getObjectById("titi");
 		Assert.assertTrue(mySingleton instanceof TitiProd);
 		TitiProd prod = (TitiProd)mySingleton;
 		Assert.assertEquals("this is the string in prod", prod.getTata().getStr());
@@ -145,14 +121,8 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 
 	@Test(timeout=30000)
 	public void testInjectAnnotation() throws Exception {
-		Application app = LCCore.getApplication();
 		// DEV
-		app.setProperty("env", "DEV");
-		InjectionContext ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		ISynchronizationPoint<Exception> cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		Object o = ctx.getObjectById("with-deps");
+		Object o = ctxDev.getObjectById("with-deps");
 		Assert.assertNotNull(o);
 		WithDependencies w = (WithDependencies)o;
 		Assert.assertTrue(w.mySingleton instanceof MySingletonDev);
@@ -162,12 +132,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertEquals("DEV", ((ProvidedDev)w.provided).getEnv());
 
 		// PROD
-		app.setProperty("env", "PROD");
-		ctx = app.getInstance(InjectionContext.class);
-		ctx = new InjectionContext(ctx);
-		cfg = InjectionXmlConfiguration.configure(ctx, "test-injection-simple.xml");
-		cfg.blockThrow(0);
-		o = ctx.getObjectById("with-deps");
+		o = ctxProd.getObjectById("with-deps");
 		Assert.assertNotNull(o);
 		w = (WithDependencies)o;
 		Assert.assertTrue(w.mySingleton instanceof MySingletonProd);

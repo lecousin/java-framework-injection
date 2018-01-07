@@ -19,6 +19,7 @@ import java.util.zip.ZipFile;
 
 import net.lecousin.framework.application.Application;
 import net.lecousin.framework.io.serialization.SerializationClass;
+import net.lecousin.framework.log.Logger;
 import net.lecousin.framework.math.IntegerUnit;
 import net.lecousin.framework.math.IntegerUnit.UnitConversionException;
 import net.lecousin.framework.properties.Property;
@@ -277,21 +278,28 @@ public final class Injection {
 	
 	/** Scan a package to find injectable objects. */
 	public static void scanPackage(InjectionContext ctx, Application app, String pkgName, boolean singletons) throws Exception {
+		Logger logger = app.getLoggerFactory().getLogger(Injection.class);
+		if (logger.debug())
+			logger.debug("Scanning package " + pkgName);
 		List<File> files = app.getLibrariesManager().getLibrariesLocations();
 		for (File f : files) {
 			if (f.isDirectory())
-				scanDirectoryPackage(ctx, app, pkgName, singletons, f);
+				scanDirectoryPackage(ctx, app, pkgName, singletons, f, logger);
 			else
-				scanJarPackage(ctx, app, pkgName, singletons, f);
+				scanJarPackage(ctx, app, pkgName, singletons, f, logger);
 		}
 	}
 	
 	private static void scanDirectoryPackage(
-		InjectionContext ctx, Application app, String pkgName, boolean singletons, File classDir
+		InjectionContext ctx, Application app, String pkgName, boolean singletons, File classDir, Logger logger
 	) throws Exception {
+		if (logger.debug())
+			logger.debug("Search package " + pkgName + " in library " + classDir.getAbsolutePath());
 		String pkgPath = pkgName.replace('.', '/');
 		File dir = new File(classDir, pkgPath);
 		if (!dir.exists()) return;
+		if (logger.debug())
+			logger.debug("Package " + pkgName + " found in directory " + dir.getAbsolutePath());
 		File[] files = dir.listFiles();
 		if (files == null) return;
 		for (File f : files) {
@@ -300,11 +308,15 @@ public final class Injection {
 			String className = f.getName();
 			className = className.substring(0, className.length() - 6);
 			Class<?> cl = app.getClassLoader().loadClass(pkgName + '.' + className);
-			scanClass(ctx, app, singletons, cl);
+			scanClass(ctx, app, singletons, cl, logger);
 		}
 	}
 	
-	private static void scanJarPackage(InjectionContext ctx, Application app, String pkgName, boolean singletons, File jarFile) throws Exception {
+	private static void scanJarPackage(
+		InjectionContext ctx, Application app, String pkgName, boolean singletons, File jarFile, Logger logger
+	) throws Exception {
+		if (logger.debug())
+			logger.debug("Search package " + pkgName + " in JAR file " + jarFile.getAbsolutePath());
 		String pkgPath = pkgName.replace('.', '/') + '/';
 		try (ZipFile jar = new ZipFile(jarFile)) {
 			Enumeration<? extends ZipEntry> entries = jar.entries();
@@ -317,12 +329,16 @@ public final class Injection {
 				name = name.substring(0, name.length() - 6);
 				name = name.replace('/', '.');
 				Class<?> cl = app.getClassLoader().loadClass(name);
-				scanClass(ctx, app, singletons, cl);
+				scanClass(ctx, app, singletons, cl, logger);
 			}
 		}
 	}
 	
-	private static void scanClass(InjectionContext ctx, Application app, boolean singleton, Class<?> cl) throws Exception {
+	private static void scanClass(
+		InjectionContext ctx, Application app, boolean singleton, Class<?> cl, Logger logger
+	) throws Exception {
+		if (logger.debug())
+			logger.debug("Scan class " + cl.getName());
 		InjectableWhen when = cl.getAnnotation(InjectableWhen.class);
 		if (when != null) {
 			for (Property p : when.value()) {
@@ -350,6 +366,8 @@ public final class Injection {
 			else
 				return;
 		}
+		if (logger.debug())
+			logger.debug("Injectable class found: " + cl.getName());
 		if (singleton)
 			ctx.add(new Singleton(type, create(ctx, cl, null, new ArrayList<>(0)), id.length() > 0 ? id : null));
 		else
