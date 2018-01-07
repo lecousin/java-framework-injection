@@ -1,5 +1,6 @@
 package net.lecousin.framework.injection.test.annotations;
 
+import net.lecousin.framework.injection.InitMethod;
 import net.lecousin.framework.injection.Inject;
 import net.lecousin.framework.injection.InjectableWhen;
 import net.lecousin.framework.properties.Property;
@@ -11,6 +12,12 @@ public class Impl3Prod implements Interface3 {
 
 	@Inject
 	private Interface1 i;
+	private boolean init = false;
+	
+	@InitMethod
+	public void init() {
+		init = true;
+	}
 	
 	@Override
 	public Interface1 getInterface() {
@@ -22,4 +29,9 @@ public class Impl3Prod implements Interface3 {
 		return 20;
 	}
 	
+	@Override
+	public boolean initialized() {
+		return init;
+	}
+
 }

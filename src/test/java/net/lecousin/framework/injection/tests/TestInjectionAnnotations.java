@@ -82,12 +82,14 @@ public class TestInjectionAnnotations extends LCCoreAbstractTest {
 		Assert.assertTrue(interf instanceof Impl3Dev);
 		Assert.assertEquals(10, interf.value());
 		Assert.assertEquals(1, interf.getInterface().value());
+		Assert.assertTrue(interf.initialized());
 		
 		// PROD
 		interf = ctxProd.getObject(Interface3.class);
 		Assert.assertTrue(interf instanceof Impl3Prod);
 		Assert.assertEquals(20, interf.value());
 		Assert.assertEquals(2, interf.getInterface().value());
+		Assert.assertTrue(interf.initialized());
 	}
 	
 }
