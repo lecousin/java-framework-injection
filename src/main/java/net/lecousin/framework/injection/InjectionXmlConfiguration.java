@@ -266,7 +266,7 @@ public final class InjectionXmlConfiguration {
 				throw new Exception("Unexpected element " + xml.event.text.asString());
 		}
 		if (!eligible) return;
-		configure(ctx, filename);
+		configure(ctx, filename).blockThrow(0);
 	}
 	
 	/** Read an attribute from the given XML which must be on the attribute element. */
