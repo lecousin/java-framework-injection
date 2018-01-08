@@ -64,7 +64,7 @@ public class ObjectAttribute {
 				}
 			}
 			Method getter = ClassUtil.getGetter(cl, fromAttribute);
-			if (getter != null && (getter.getModifiers() & Modifier.PUBLIC) == 0)
+			if (getter != null && (getter.getModifiers() & Modifier.PUBLIC) != 0)
 				try { return getter.invoke(o); }
 				catch (IllegalAccessException e) {
 					throw new InjectionException("Cannot access to attribute " + fromAttribute + " on class " + cl.getName());
