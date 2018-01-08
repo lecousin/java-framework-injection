@@ -119,7 +119,7 @@ public final class Injection {
 					}
 				if (expectedUnit == null)
 					throw new InjectionException("Invalid value '" + value + "' for type " + type.getName());
-				val = Long.parseLong(value.substring(0, i + 1).trim());
+				val = Long.parseLong(value.substring(0, i).trim());
 				
 				String s = value.substring(i).trim().toLowerCase();
 				Class<? extends IntegerUnit> unit = IntegerUnit.ParserRegistry.get(s);
@@ -184,7 +184,7 @@ public final class Injection {
 			if (!f.isAccessible())
 				f.setAccessible(true);
 			Object o = attribute.create(ctx, f.getType(), f.getGenericType(), f.getAnnotations());
-			if (o != null)
+			if (o != null || attribute.isExplicitlyNull())
 				try { f.set(instance, o); }
 				catch (IllegalAccessException e) {
 					throw new InjectionException("Cannot access to attribute " + name + " on class " + cl.getName());

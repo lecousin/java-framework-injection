@@ -44,6 +44,10 @@ public class ObjectAttribute {
 		return name;
 	}
 	
+	public boolean isExplicitlyNull() {
+		return "null".equals(value);
+	}
+	
 	/** Create the object based on the given context. */
 	public Object create(InjectionContext ctx, Class<?> type, Type genericType, Annotation[] annotations) throws InjectionException {
 		if (value != null)

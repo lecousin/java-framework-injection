@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
+
+	<Singleton>
+		<class name="net.lecousin.framework.injection.test.attributes.AttributesContainer">
+			<attribute name="bool1" value="true"/>
+			<attribute name="bool2" value="false"/>
+			<attribute name="b1" value="12"/>
+			<attribute name="b2" value="34"/>
+			<attribute name="s1" value="123"/>
+			<attribute name="s2" value="456"/>
+			<attribute name="i1" value="1234"/>
+			<attribute name="i2" value="5678"/>
+			<attribute name="l1" value="12345"/>
+			<attribute name="l2" value="54321"/>
+			<attribute name="strNull" value="null"/>
+			<attribute name="str" value="ok"/>
+			<attribute name="integers" value="1,23,456,7890"/>
+			<attribute name="strings" value="ok,3,null,ok again"/>
+			<attribute name="days" value="48h"/>
+			<attribute name="hours" value="3h"/>
+			<attribute name="minutes" value="600 seconds"/>
+			<attribute name="seconds" value="3minutes"/>
+		</class>
+	</Singleton>
+	
+</Injection>
