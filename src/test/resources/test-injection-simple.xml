@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
 
+	<property name="pastis" value="51"/>
+
 	<Singleton type="net.lecousin.framework.injection.test.simple.IMySingleton">
 		<class name="net.lecousin.framework.injection.test.simple.MySingletonDev">
 			<property name="env" value="DEV"/>
@@ -17,11 +19,11 @@
 	<Factory type="net.lecousin.framework.injection.test.simple.IProvided">
 		<class name="net.lecousin.framework.injection.test.simple.ProvidedDev">
 			<property name="env" value="DEV"/>
-			<attribute name="env" value="DEV"/>
+			<attribute name="env" value="${env}"/>
 		</class>
 		<class name="net.lecousin.framework.injection.test.simple.ProvidedProd">
 			<property name="env" value="PROD"/>
-			<attribute name="env" value="PROD"/>
+			<attribute name="env" value="${env}"/>
 		</class>
 	</Factory>
 
@@ -30,7 +32,7 @@
 			<property name="env" value="DEV"/>
 			<attribute name="tata" class="net.lecousin.framework.injection.test.simple.TataDev">
 				<parameter value="this is the string in dev"/>
-				<parameter value="51"/>
+				<parameter value="${pastis}"/>
 			</attribute>
 		</class>
 		<class name="net.lecousin.framework.injection.test.simple.TotoProd">
@@ -56,7 +58,11 @@
 	</Singleton>
 	
 	<Singleton id="with-deps">
-		<class name="net.lecousin.framework.injection.test.simple.WithDependencies"/>
+		<class name="net.lecousin.framework.injection.test.simple.WithDependencies">
+			<init-method name="init">
+				<parameter value="123"/>
+			</init-method>
+		</class>
 	</Singleton>
 	
 </Injection>

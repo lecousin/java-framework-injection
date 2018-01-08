@@ -43,6 +43,7 @@ public final class Injection {
 	throws InjectionException {
 		Constructor<?>[] ctors = clazz.getConstructors();
 		Object bean = null;
+		// search constructor
 		for (Constructor<?> ctor : ctors) {
 			if ((ctor.getModifiers() & Modifier.PUBLIC) == 0) continue;
 			Class<?>[] types = ctor.getParameterTypes();
@@ -191,7 +192,7 @@ public final class Injection {
 			return;
 		}
 		Method setter = ClassUtil.getSetter(cl, name);
-		if (setter != null && (setter.getModifiers() & Modifier.PUBLIC) == 0) {
+		if (setter != null && (setter.getModifiers() & Modifier.PUBLIC) != 0) {
 			Object o = attribute.create(
 				ctx, setter.getParameterTypes()[0], setter.getGenericParameterTypes()[0], setter.getAnnotations());
 			if (o != null)

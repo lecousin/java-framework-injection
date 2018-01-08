@@ -10,4 +10,10 @@ public class WithDependencies {
 	@Inject
 	public IProvided provided;
 	
+	public int init = 0;
+	
+	public void init(int value) {
+		this.init = value;
+	}
+	
 }

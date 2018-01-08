@@ -301,7 +301,7 @@ public final class InjectionXmlConfiguration {
 					if (xml.event.text.equals("parameter")) {
 						UnprotectedStringBuffer val = xml.getAttributeValueByLocalName("value");
 						if (val == null) throw new Exception("Missing attribute value on element parameter");
-						params.add(val.asString());
+						params.add(Injection.resolveProperties(ctx, app, val.asString()));
 					} else if (xml.event.text.equals("attribute")) {
 						attrs.add(readObjectAttribute01(ctx, xml, app));
 					} else

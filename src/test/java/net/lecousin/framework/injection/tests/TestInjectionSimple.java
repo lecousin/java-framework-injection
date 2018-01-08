@@ -95,7 +95,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 	}
 	
 	@Test(timeout=30000)
-	public void testSingletonWithIjectedAttribute() throws Exception {
+	public void testSingletonWithInjectedAttribute() throws Exception {
 		// DEV
 		Object mySingleton = ctxDev.getObjectById("titi");
 		Assert.assertTrue(mySingleton instanceof TitiDev);
@@ -130,6 +130,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertEquals(1, ((MySingletonDev)w.mySingleton).getMyInteger());
 		Assert.assertTrue(w.provided instanceof ProvidedDev);
 		Assert.assertEquals("DEV", ((ProvidedDev)w.provided).getEnv());
+		Assert.assertEquals(123, w.init);
 
 		// PROD
 		o = ctxProd.getObjectById("with-deps");
@@ -140,6 +141,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertEquals(2, ((MySingletonProd)w.mySingleton).getMyInteger());
 		Assert.assertTrue(w.provided instanceof ProvidedProd);
 		Assert.assertEquals("PROD", ((ProvidedProd)w.provided).getEnv());
+		Assert.assertEquals(123, w.init);
 	}
 	
 }
