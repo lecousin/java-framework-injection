@@ -40,7 +40,7 @@
 			<property name="env" value="PROD"/>
 			<attribute name="tata" class="net.lecousin.framework.injection.test.simple.TataProd">
 				<parameter value="this is the string in prod"/>
-				<parameter value="52"/>
+				<parameter value="-52"/>
 			</attribute>
 		</class>
 	</Singleton>

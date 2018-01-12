@@ -121,7 +121,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertTrue(mySingleton instanceof TotoProd);
 		TataProd prod = ((TotoProd)mySingleton).getTata();
 		Assert.assertEquals("this is the string in prod", prod.getStr());
-		Assert.assertEquals(52, prod.getI());
+		Assert.assertEquals(-52, prod.getI());
 	}
 	
 	@Test(timeout=30000)
@@ -142,11 +142,11 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertTrue(mySingleton instanceof TitiProd);
 		TitiProd prod = (TitiProd)mySingleton;
 		Assert.assertEquals("this is the string in prod", prod.getTata().getStr());
-		Assert.assertEquals(52, prod.getTata().getI());
+		Assert.assertEquals(-52, prod.getTata().getI());
 		Assert.assertTrue(prod.getToto() instanceof TotoProd);
 		TataProd tataProd = ((TotoProd)prod.getToto()).getTata();
 		Assert.assertEquals("this is the string in prod", tataProd.getStr());
-		Assert.assertEquals(52, tataProd.getI());
+		Assert.assertEquals(-52, tataProd.getI());
 		Assert.assertNotNull(prod.provided);
 		Assert.assertEquals("TEST", prod.provided.getEnv());
 	}
