@@ -15,6 +15,8 @@ import net.lecousin.framework.injection.test.annotations.Impl3Prod;
 import net.lecousin.framework.injection.test.annotations.Interface1;
 import net.lecousin.framework.injection.test.annotations.Interface2;
 import net.lecousin.framework.injection.test.annotations.Interface3;
+import net.lecousin.framework.injection.test.annotations.WithId1;
+import net.lecousin.framework.injection.test.annotations.WithId2;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -92,6 +94,15 @@ public class TestInjectionAnnotations extends LCCoreAbstractTest {
 		Assert.assertEquals(2, interf.getInterface().value());
 		Assert.assertTrue(interf.initialized());
 		Assert.assertTrue(interf == ctxProd.getObject(Interface3.class));
+		
+		Impl3Prod i = (Impl3Prod)interf;
+		Assert.assertNotNull(i.id1);
+		Assert.assertNotNull(i.id2);
+		Assert.assertNull(i.id3);
+		Assert.assertTrue(i.id1 instanceof WithId1);
+		Assert.assertTrue(i.id2 instanceof WithId2);
+		Assert.assertNotEquals(i.id1.value(), ((WithId1)ctxProd.getObjectById("myid1")).value());
+		Assert.assertNotEquals(i.id2.value(), ((WithId2)ctxProd.getObjectById("myid2")).value());
 	}
 	
 }

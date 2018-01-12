@@ -4,6 +4,7 @@ import net.lecousin.framework.application.Application;
 import net.lecousin.framework.application.LCCore;
 import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
 import net.lecousin.framework.core.test.LCCoreAbstractTest;
+import net.lecousin.framework.injection.Injection;
 import net.lecousin.framework.injection.InjectionContext;
 import net.lecousin.framework.injection.InjectionXmlConfiguration;
 import net.lecousin.framework.injection.test.simple.IMySingleton;
@@ -44,6 +45,24 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 	}
 	
 	private static InjectionContext ctxDev, ctxProd;
+
+	@Test(timeout=30000)
+	public void testBasic() throws Exception {
+		Application app = LCCore.getApplication();
+		app.setProperty("env", "TEST");
+		Assert.assertEquals(app.getInstance(InjectionContext.class), ctxDev.getParent());
+		ctxDev.getParent().setProperty("test", "true");
+		Assert.assertNull(Injection.resolveProperties(ctxDev, app, (String)null));
+		Assert.assertEquals("test${env", Injection.resolveProperties(ctxDev, app, "test${env"));
+		Assert.assertEquals("test${env2}", Injection.resolveProperties(ctxDev, app, "test${env2}"));
+		Assert.assertEquals("testTEST", Injection.resolveProperties(ctxDev, app, "test${env}"));
+		Assert.assertEquals("testTESTx", Injection.resolveProperties(ctxDev, app, "test${env}x"));
+		Assert.assertEquals("testtruex", Injection.resolveProperties(ctxDev, app, "test${test}x"));
+		ctxDev.setParent(null);
+		Assert.assertEquals("test${test}x", Injection.resolveProperties(ctxDev, app, "test${test}x"));
+		ctxDev.setParent(app.getInstance(InjectionContext.class));
+		Assert.assertEquals("testtruex", Injection.resolveProperties(ctxDev, app, "test${test}x"));
+	}
 	
 	@Test(timeout=30000)
 	public void testSingleton() throws Exception {

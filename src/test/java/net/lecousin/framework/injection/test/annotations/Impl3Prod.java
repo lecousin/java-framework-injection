@@ -12,6 +12,12 @@ public class Impl3Prod implements Interface3 {
 
 	@Inject
 	private Interface1 i;
+	@Inject(id="myid1")
+	public WithIdAbstract id1;
+	@Inject(id="myid2", required=false)
+	public WithIdAbstract id2;
+	@Inject(id="myid3", required=false)
+	public WithIdAbstract id3;
 	private boolean init = false;
 	
 	@InitMethod

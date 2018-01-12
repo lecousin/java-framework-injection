@@ -38,7 +38,10 @@ public class InjectionContext {
 	
 	/** Return a property or null if not set. */
 	public String getProperty(String name) {
-		return properties.get(name);
+		String value = properties.get(name);
+		if (value == null && parent != null)
+			return parent.getProperty(name);
+		return value;
 	}
 	
 	/** Retrieve an object by its id. */
