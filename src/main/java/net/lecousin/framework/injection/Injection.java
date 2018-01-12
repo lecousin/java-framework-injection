@@ -110,6 +110,8 @@ public final class Injection {
 			byte.class.equals(type) || Byte.class.equals(type)) {
 			value = value.trim();
 			int i = 0;
+			if (value.length() > 1 && value.charAt(0) == '-')
+				i++;
 			while (i < value.length() && Character.isDigit(value.charAt(i)))
 				i++;
 			long val;
