@@ -2,5 +2,13 @@
 <Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
 
 	<import file="test-injection-imported.xml"/>
+
+	<import file="test-injection-imported-dev.xml">
+		<property name="env" value="DEV"/>
+	</import>
+
+	<import file="test-injection-imported-prod.xml">
+		<property name="env" value="PROD"/>
+	</import>
 	
 </Injection>

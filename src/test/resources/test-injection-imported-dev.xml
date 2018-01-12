@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
+
+	<property name="imported_dev" value="true"/>
+	
+</Injection>

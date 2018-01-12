@@ -18,6 +18,8 @@ public class Impl3Prod implements Interface3 {
 	public WithIdAbstract id2;
 	@Inject(id="myid3", required=false)
 	public WithIdAbstract id3;
+	@Inject(id="myid2", required=false)
+	public WithId1 id22;
 	private boolean init = false;
 	
 	@InitMethod

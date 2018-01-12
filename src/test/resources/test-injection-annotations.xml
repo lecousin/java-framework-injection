@@ -3,4 +3,12 @@
 
 	<scan-package package="net.lecousin.framework.injection.test.annotations"/>
 	
+	<scan-package package="net.lecousin.framework.injection.test.annotations.dev">
+		<property name="env" value="DEV"/>
+	</scan-package>
+
+	<scan-package package="net.lecousin.framework.injection.test.annotations.prod">
+		<property name="env" value="PROD"/>
+	</scan-package>
+	
 </Injection>

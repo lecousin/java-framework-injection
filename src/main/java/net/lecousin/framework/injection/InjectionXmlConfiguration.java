@@ -150,8 +150,7 @@ public final class InjectionXmlConfiguration {
 		while (xml.nextInnerElement(elem)) {
 			if (xml.event.text.equals("class")) {
 				UnprotectedStringBuffer n = xml.getAttributeValueByLocalName("name");
-				if (n == null)
-					throw new Exception("Missing attribute name on element class");
+				if (n == null) throw new Exception("Missing attribute name on element class");
 				String name = Injection.resolveProperties(ctx, app, n.asString());
 				boolean eligible = true;
 				List<ObjectAttribute> attrs = new LinkedList<>();
@@ -160,33 +159,28 @@ public final class InjectionXmlConfiguration {
 				while (xml.nextInnerElement(elemClass)) {
 					if (xml.event.text.equals("property")) {
 						UnprotectedStringBuffer pname = xml.getAttributeValueByLocalName("name");
-						if (pname == null)
-							throw new Exception("Missing attribute name on element property");
+						if (pname == null) throw new Exception("Missing attribute name on element property");
 						String pvalue = Injection.resolveProperties(ctx, app, xml.getAttributeValueByLocalName("value"));
-						if (pvalue == null)
-							throw new Exception("Missing attribute value on element property with name " + pname);
-						eligible &= pvalue.equals(app.getProperty(pname.asString()));
+						if (pvalue == null) throw new Exception("Missing attribute value on property " + pname);
+						eligible &= pvalue.equals(Injection.getProperty(app, ctx, pname.asString()));
 					} else if (xml.event.text.equals("attribute")) {
 						attrs.add(readObjectAttribute01(ctx, xml, app));
 					} else if (xml.event.text.equals("init-method")) {
-						if (init != null)
-							throw new Exception("Only one init-method can be specified for class " + name);
+						if (init != null) throw new Exception("Only one init-method can be specified for class " + name);
 						init = readObjectMethod01(xml);
 					} else
 						throw new Exception("Unexpected element " + xml.event.text.asString());
 				}
 				if (!eligible) continue;
 				try { cl = app.getClassLoader().loadClass(name); }
-				catch (Throwable t) {
-					continue;
-				}
+				catch (Throwable t) { continue; }
 				InjectableWhen when = cl.getAnnotation(InjectableWhen.class);
 				if (when != null) {
 					for (Property p : when.value()) {
 						String pname = p.name();
 						String pvalue = p.value();
 						pvalue = Injection.resolveProperties(ctx, app, pvalue);
-						if (!pvalue.equals(app.getProperty(pname))) {
+						if (!pvalue.equals(Injection.getProperty(app, ctx, pname))) {
 							eligible = false;
 							break;
 						}
@@ -223,8 +217,7 @@ public final class InjectionXmlConfiguration {
 	
 	private static void configureScanPackage01(InjectionContext ctx, Application app, XMLStreamReader xml) throws Exception {
 		String pkgName = Injection.resolveProperties(ctx, app, xml.getAttributeValueByLocalName("package"));
-		if (pkgName == null)
-			throw new Exception("Missing package attribute on element scan-package");
+		if (pkgName == null) throw new Exception("Missing package attribute on element scan-package");
 		boolean singletons = true;
 		UnprotectedStringBuffer s = xml.getAttributeValueByLocalName("singleton");
 		if (s != null && s.toLowerCase().equals("false"))
@@ -234,12 +227,10 @@ public final class InjectionXmlConfiguration {
 		while (xml.nextInnerElement(elem)) {
 			if (xml.event.text.equals("property")) {
 				UnprotectedStringBuffer pname = xml.getAttributeValueByLocalName("name");
-				if (pname == null)
-					throw new Exception("Missing attribute name on element property");
+				if (pname == null) throw new Exception("Missing attribute name on element property");
 				String pvalue = Injection.resolveProperties(ctx, app, xml.getAttributeValueByLocalName("value"));
-				if (pvalue == null)
-					throw new Exception("Missing attribute value on element property with name " + pname);
-				eligible &= pvalue.equals(app.getProperty(pname.asString()));
+				if (pvalue == null) throw new Exception("Missing attribute value on property " + pname);
+				eligible &= pvalue.equals(Injection.getProperty(app, ctx, pname.asString()));
 			} else
 				throw new Exception("Unexpected element " + xml.event.text.asString());
 		}
@@ -249,19 +240,16 @@ public final class InjectionXmlConfiguration {
 
 	private static void configureImport01(InjectionContext ctx, Application app, XMLStreamReader xml) throws Exception {
 		String filename = Injection.resolveProperties(ctx, app, xml.getAttributeValueByLocalName("file"));
-		if (filename == null)
-			throw new Exception("Missing file attribute on element import");
+		if (filename == null) throw new Exception("Missing file attribute on element import");
 		boolean eligible = true;
 		ElementContext elem = xml.event.context.getFirst();
 		while (xml.nextInnerElement(elem)) {
 			if (xml.event.text.equals("property")) {
 				UnprotectedStringBuffer pname = xml.getAttributeValueByLocalName("name");
-				if (pname == null)
-					throw new Exception("Missing attribute name on element property");
+				if (pname == null) throw new Exception("Missing attribute name on element property");
 				String pvalue = Injection.resolveProperties(ctx, app, xml.getAttributeValueByLocalName("value"));
-				if (pvalue == null)
-					throw new Exception("Missing attribute value on element property with name " + pname);
-				eligible &= pvalue.equals(app.getProperty(pname.asString()));
+				if (pvalue == null) throw new Exception("Missing attribute value on property " + pname);
+				eligible &= pvalue.equals(Injection.getProperty(app, ctx, pname.asString()));
 			} else
 				throw new Exception("Unexpected element " + xml.event.text.asString());
 		}
@@ -291,7 +279,7 @@ public final class InjectionXmlConfiguration {
 			return new ObjectAttribute(name.asString(), null, ref, null, null);
 		}
 		if (clazz != null) {
-			if (fromSingleton != null) throw new Exception("Attributes ref and fromSingleton are exclusive on element 'attribute'");
+			if (fromSingleton != null) throw new Exception("Attributes class and fromSingleton are exclusive on element 'attribute'");
 			Class<?> cl = app.getClassLoader().loadClass(clazz);
 			List<String> params = new LinkedList<>();
 			List<ObjectAttribute> attrs = new LinkedList<>();
@@ -311,8 +299,7 @@ public final class InjectionXmlConfiguration {
 			return new ObjectAttribute(name.asString(), cl, params, attrs);
 		}
 		String fromAttr = Injection.resolveProperties(ctx, app, xml.getAttributeValueByLocalName("fromAttribute"));
-		if (fromAttr == null)
-			throw new Exception("Missing fromAttribute with fromSingleton on element 'attribute'");
+		if (fromAttr == null) throw new Exception("Missing fromAttribute with fromSingleton on element 'attribute'");
 		return new ObjectAttribute(name.asString(), null, null, fromSingleton, fromAttr);
 	}
 	

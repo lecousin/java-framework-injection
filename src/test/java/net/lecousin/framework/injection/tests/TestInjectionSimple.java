@@ -1,5 +1,7 @@
 package net.lecousin.framework.injection.tests;
 
+import java.io.FileNotFoundException;
+
 import net.lecousin.framework.application.Application;
 import net.lecousin.framework.application.LCCore;
 import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
@@ -49,6 +51,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 	@Test(timeout=30000)
 	public void testBasic() throws Exception {
 		Application app = LCCore.getApplication();
+		
 		app.setProperty("env", "TEST");
 		Assert.assertEquals(app.getInstance(InjectionContext.class), ctxDev.getParent());
 		ctxDev.getParent().setProperty("test", "true");
@@ -62,6 +65,14 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertEquals("test${test}x", Injection.resolveProperties(ctxDev, app, "test${test}x"));
 		ctxDev.setParent(app.getInstance(InjectionContext.class));
 		Assert.assertEquals("testtruex", Injection.resolveProperties(ctxDev, app, "test${test}x"));
+		
+		Assert.assertNull(ctxDev.getObjectById("xx"));
+		Assert.assertNull(ctxDev.getObject(TestInjectionSimple.class));
+		
+		try {
+			InjectionXmlConfiguration.configure(ctxDev, "xx").blockThrow(0);
+			throw new AssertionError("FileNotFoundException expected");
+		} catch (FileNotFoundException e) {}
 	}
 	
 	@Test(timeout=30000)
@@ -136,6 +147,8 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		TataProd tataProd = ((TotoProd)prod.getToto()).getTata();
 		Assert.assertEquals("this is the string in prod", tataProd.getStr());
 		Assert.assertEquals(52, tataProd.getI());
+		Assert.assertNotNull(prod.provided);
+		Assert.assertEquals("TEST", prod.provided.getEnv());
 	}
 
 	@Test(timeout=30000)

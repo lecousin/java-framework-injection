@@ -15,8 +15,11 @@ import net.lecousin.framework.injection.test.annotations.Impl3Prod;
 import net.lecousin.framework.injection.test.annotations.Interface1;
 import net.lecousin.framework.injection.test.annotations.Interface2;
 import net.lecousin.framework.injection.test.annotations.Interface3;
+import net.lecousin.framework.injection.test.annotations.Interface4;
 import net.lecousin.framework.injection.test.annotations.WithId1;
 import net.lecousin.framework.injection.test.annotations.WithId2;
+import net.lecousin.framework.injection.test.annotations.dev.Impl4Dev;
+import net.lecousin.framework.injection.test.annotations.prod.Impl4Prod;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -99,10 +102,22 @@ public class TestInjectionAnnotations extends LCCoreAbstractTest {
 		Assert.assertNotNull(i.id1);
 		Assert.assertNotNull(i.id2);
 		Assert.assertNull(i.id3);
+		Assert.assertNull(i.id22);
 		Assert.assertTrue(i.id1 instanceof WithId1);
 		Assert.assertTrue(i.id2 instanceof WithId2);
 		Assert.assertNotEquals(i.id1.value(), ((WithId1)ctxProd.getObjectById("myid1")).value());
 		Assert.assertNotEquals(i.id2.value(), ((WithId2)ctxProd.getObjectById("myid2")).value());
 	}
 	
+	@Test(timeout=30000)
+	public void test4() throws Exception {
+		// DEV
+		Interface4 interf = ctxDev.getObject(Interface4.class);
+		Assert.assertTrue(interf instanceof Impl4Dev);
+		
+		// PROD
+		interf = ctxProd.getObject(Interface4.class);
+		Assert.assertTrue(interf instanceof Impl4Prod);
+	}
+
 }

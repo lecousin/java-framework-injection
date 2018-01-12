@@ -31,6 +31,13 @@ public final class Injection {
 	
 	private Injection() { /* no instance */ }
 	
+	/** Search a property first in the context, then in the application. */
+	public static String getProperty(Application app, InjectionContext ctx, String name) {
+		String value = ctx.getProperty(name);
+		if (value == null) value = app.getProperty(name);
+		return value;
+	}
+	
 	/** Create an object to be injected. */
 	public static Object create(
 		InjectionContext ctx, Class<?> clazz, ObjectMethod initMethod, List<ObjectAttribute> attrs

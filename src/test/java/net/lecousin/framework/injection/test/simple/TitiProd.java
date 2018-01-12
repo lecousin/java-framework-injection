@@ -5,6 +5,8 @@ public class TitiProd implements ITiti {
 	private IToto toto;
 	private TataProd tata_not_accessible;
 	
+	public ProvidedProd provided;
+	
 	@Override
 	public IToto getToto() {
 		return toto;

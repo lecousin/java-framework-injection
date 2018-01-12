@@ -2,6 +2,7 @@
 <Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
 
 	<property name="pastis" value="51"/>
+	<property name="a property" value="a value"></property>
 
 	<Singleton type="net.lecousin.framework.injection.test.simple.IMySingleton">
 		<class name="net.lecousin.framework.injection.test.simple.MySingletonDev">
@@ -54,6 +55,9 @@
 			<property name="env" value="PROD"/>
 			<attribute name="toto" ref="toto"/>
 			<attribute name="tata" fromSingleton="toto" fromAttribute="tata"/>
+			<attribute name="provided" class="net.lecousin.framework.injection.test.simple.ProvidedProd">
+				<attribute name="env" value="TEST"/>
+			</attribute>
 		</class>
 	</Singleton>
 	
