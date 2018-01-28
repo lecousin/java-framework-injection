@@ -83,6 +83,7 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		Assert.assertEquals("I'm in development", mySingleton.getMyString());
 		Assert.assertEquals(1, mySingleton.getMyInteger());
 		Assert.assertTrue(mySingleton == ctxDev.getObject(IMySingleton.class));
+		Assert.assertNull(((MySingletonDev)mySingleton).testNull);
 		
 		// PROD
 		mySingleton = ctxProd.getObject(IMySingleton.class);

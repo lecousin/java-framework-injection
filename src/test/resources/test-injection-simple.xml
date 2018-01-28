@@ -9,6 +9,7 @@
 			<property name="env" value="DEV"/>
 			<attribute name="myString" value="I'm in development"/>
 			<attribute name="myInteger" value="1"/>
+			<attribute name="testNull" ref="wrong"/>
 		</class>
 		<class name="net.lecousin.framework.injection.test.simple.MySingletonProd">
 			<property name="env" value="PROD"/>

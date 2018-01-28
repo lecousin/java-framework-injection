@@ -5,6 +5,8 @@ public class MySingletonDev implements IMySingleton {
 	private String myString;
 	private int myInteger;
 	
+	public IToto testNull;
+	
 	@Override
 	public String getMyString() {
 		return myString;
