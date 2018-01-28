@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Injection xmlns="http://code.lecousin.net/java/net.lecousin.framework.injection/0.1">
+
+	<scan-package package="org.apache.commons.math3.geometry.euclidean.oned"/>
+	
+</Injection>
