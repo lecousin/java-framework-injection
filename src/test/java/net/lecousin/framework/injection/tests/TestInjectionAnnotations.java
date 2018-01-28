@@ -19,6 +19,9 @@ import net.lecousin.framework.injection.test.annotations.Interface4;
 import net.lecousin.framework.injection.test.annotations.WithId1;
 import net.lecousin.framework.injection.test.annotations.WithId2;
 import net.lecousin.framework.injection.test.annotations.dev.Impl4Dev;
+import net.lecousin.framework.injection.test.annotations.noscan.ITest;
+import net.lecousin.framework.injection.test.annotations.noscan.TestDev;
+import net.lecousin.framework.injection.test.annotations.noscan.TestProd;
 import net.lecousin.framework.injection.test.annotations.prod.Impl4Prod;
 
 import org.junit.Assert;
@@ -120,4 +123,14 @@ public class TestInjectionAnnotations extends LCCoreAbstractTest {
 		Assert.assertTrue(interf instanceof Impl4Prod);
 	}
 
+	@Test(timeout=30000)
+	public void test5() throws Exception {
+		// DEV
+		ITest interf = ctxDev.getObject(ITest.class);
+		Assert.assertTrue(interf instanceof TestDev);
+		
+		// PROD
+		interf = ctxProd.getObject(ITest.class);
+		Assert.assertTrue(interf instanceof TestProd);
+	}
 }

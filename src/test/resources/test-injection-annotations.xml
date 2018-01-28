@@ -11,4 +11,9 @@
 		<property name="env" value="PROD"/>
 	</scan-package>
 	
+	<Singleton>
+		<class name="net.lecousin.framework.injection.test.annotations.noscan.TestDev"/>
+		<class name="net.lecousin.framework.injection.test.annotations.noscan.TestProd"/>
+	</Singleton>
+	
 </Injection>

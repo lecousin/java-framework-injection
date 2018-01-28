@@ -23,6 +23,15 @@ public class TestErrors extends LCCoreAbstractTest {
 		testError(ctx, "error/04-unknown_element.xml");
 		testError(ctx, "error/05-invalid_property1.xml");
 		testError(ctx, "error/06-invalid_property2.xml");
+		testError(ctx, "error/07-unknown_element_in_singleton.xml");
+		testError(ctx, "error/08-class_without_name.xml");
+		testError(ctx, "error/09-class_with_invalid_property1.xml");
+		testError(ctx, "error/10-class_with_invalid_property2.xml");
+		testError(ctx, "error/11-class_with_unknown_element");
+		testError(ctx, "error/12-class_with_2_init.xml");
+		testError(ctx, "error/06-invalid_property2.xml");
+		testError(ctx, "error/06-invalid_property2.xml");
+		testError(ctx, "error/06-invalid_property2.xml");
 	}
 	
 	private static void testError(InjectionContext ctx, String filename) {
