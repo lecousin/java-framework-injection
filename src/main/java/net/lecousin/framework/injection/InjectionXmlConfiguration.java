@@ -3,7 +3,6 @@ package net.lecousin.framework.injection;
 import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,14 +10,13 @@ import java.util.List;
 import net.lecousin.framework.application.Application;
 import net.lecousin.framework.application.LCCore;
 import net.lecousin.framework.concurrent.Task;
-import net.lecousin.framework.concurrent.Threading;
 import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
 import net.lecousin.framework.concurrent.synch.SynchronizationPoint;
 import net.lecousin.framework.exception.NoException;
 import net.lecousin.framework.io.IO;
-import net.lecousin.framework.io.IOFromInputStream;
 import net.lecousin.framework.io.buffering.PreBufferedReadable;
-import net.lecousin.framework.io.provider.IOProviderFromName;
+import net.lecousin.framework.io.provider.IOProvider;
+import net.lecousin.framework.io.provider.IOProviderFromPathUsingClassloader;
 import net.lecousin.framework.properties.Property;
 import net.lecousin.framework.util.ClassUtil;
 import net.lecousin.framework.util.UnprotectedStringBuffer;
@@ -37,17 +35,15 @@ public final class InjectionXmlConfiguration {
 	@SuppressWarnings("resource")
 	public static ISynchronizationPoint<Exception> configure(InjectionContext ctx, String filename) {
 		ClassLoader cl = LCCore.getApplication().getClassLoader();
-		if (cl instanceof IOProviderFromName.Readable) {
-			try {
-				return configure(ctx, ((IOProviderFromName.Readable)cl).provideReadableIO(filename, Task.PRIORITY_RATHER_IMPORTANT));
-			} catch (IOException e) {
-				return new SynchronizationPoint<>(e);
-			}
-		}
-		InputStream input = cl.getResourceAsStream(filename);
-		if (input == null)
+		IOProviderFromPathUsingClassloader iop = new IOProviderFromPathUsingClassloader(cl);
+		IOProvider.Readable provider = iop.get(filename);
+		if (provider == null)
 			return new SynchronizationPoint<>(new FileNotFoundException(filename));
-		return configure(ctx, new IOFromInputStream(input, filename, Threading.getUnmanagedTaskManager(), Task.PRIORITY_NORMAL));
+		try {
+			return configure(ctx, provider.provideIOReadable(Task.PRIORITY_RATHER_IMPORTANT));
+		} catch (IOException e) {
+			return new SynchronizationPoint<>(e);
+		}
 	}
 	
 	/** Configure the given InjectionContext with the XML file. */
