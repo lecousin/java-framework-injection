@@ -1,9 +1,15 @@
 package net.lecousin.framework.injection.test.attributes;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
+import net.lecousin.framework.locale.annotations.LocalizableProperty;
+import net.lecousin.framework.math.FragmentedRangeInteger;
 import net.lecousin.framework.math.IntegerUnit.Unit;
+import net.lecousin.framework.math.RangeInteger;
 import net.lecousin.framework.math.TimeUnit;
+import net.lecousin.framework.util.StringFormat;
+import net.lecousin.framework.util.StringParser;
 
 public class AttributesContainer implements AttributesInterface {
 
@@ -25,16 +31,35 @@ public class AttributesContainer implements AttributesInterface {
 	public ArrayList<Integer> integers;
 	public ArrayList<String> strings;
 	
+	@LocalizableProperty(key="test", name = "test")
 	@Unit(TimeUnit.Day.class)
 	public byte days;
 	
 	@Unit(TimeUnit.Hour.class)
+	@LocalizableProperty(key="test", name = "test")
 	public short hours;
 	
+	@LocalizableProperty(key="test", name = "test")
 	@Unit(TimeUnit.Minute.class)
 	public int minutes;
 	
 	@Unit(TimeUnit.Second.class)
+	@LocalizableProperty(key="test", name = "test")
 	public long seconds;
+	
+	public FragmentedRangeInteger ranges;
+	public RangeInteger range;
+	
+	@StringFormat(parser=CustomParser.class)
+	public Integer custom;
+	@StringFormat(parser=CustomParser.class)
+	public Integer custom2;
+	
+	public static class CustomParser implements StringParser<Integer> {
+		@Override
+		public Integer parse(String string) throws ParseException {
+			return "hello".equals(string) ? Integer.valueOf(51) : Integer.valueOf(0);
+		}
+	}
 	
 }

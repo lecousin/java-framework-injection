@@ -1,9 +1,15 @@
 package net.lecousin.framework.injection.tests;
 
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import net.lecousin.framework.application.Application;
 import net.lecousin.framework.application.LCCore;
 import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
 import net.lecousin.framework.core.test.LCCoreAbstractTest;
+import net.lecousin.framework.injection.Inject;
+import net.lecousin.framework.injection.Injection;
 import net.lecousin.framework.injection.InjectionContext;
 import net.lecousin.framework.injection.InjectionXmlConfiguration;
 import net.lecousin.framework.injection.test.annotations.Impl1Dev;
@@ -23,10 +29,6 @@ import net.lecousin.framework.injection.test.annotations.noscan.ITest;
 import net.lecousin.framework.injection.test.annotations.noscan.TestDev;
 import net.lecousin.framework.injection.test.annotations.noscan.TestProd;
 import net.lecousin.framework.injection.test.annotations.prod.Impl4Prod;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class TestInjectionAnnotations extends LCCoreAbstractTest {
 
@@ -132,5 +134,27 @@ public class TestInjectionAnnotations extends LCCoreAbstractTest {
 		// PROD
 		interf = ctxProd.getObject(ITest.class);
 		Assert.assertTrue(interf instanceof TestProd);
+	}
+
+	public static class Test6 {
+		@Inject
+		public ITest toBeInjected;
+		@Inject
+		public ITest alreadySet = new TestDev();
+	}
+	
+	@Test(timeout=30000)
+	public void test6() throws Exception {
+		// DEV
+		Test6 t6 = new Test6();
+		Injection.inject(ctxDev, t6);
+		Assert.assertTrue(t6.toBeInjected instanceof TestDev);
+		Assert.assertTrue(t6.alreadySet instanceof TestDev);
+		
+		// PROD
+		t6 = new Test6();
+		Injection.inject(ctxProd, t6);
+		Assert.assertTrue(t6.toBeInjected instanceof TestProd);
+		Assert.assertTrue(t6.alreadySet instanceof TestDev);
 	}
 }

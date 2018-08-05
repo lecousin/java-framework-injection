@@ -1,14 +1,15 @@
 package net.lecousin.framework.injection.tests;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
 import net.lecousin.framework.core.test.LCCoreAbstractTest;
 import net.lecousin.framework.injection.InjectionContext;
 import net.lecousin.framework.injection.InjectionXmlConfiguration;
 import net.lecousin.framework.injection.test.attributes.AttributesContainer;
 import net.lecousin.framework.injection.test.attributes.AttributesInterface;
-
-import org.junit.Assert;
-import org.junit.Test;
+import net.lecousin.framework.math.RangeInteger;
 
 public class TestInjectionAttributes extends LCCoreAbstractTest {
 
@@ -44,6 +45,12 @@ public class TestInjectionAttributes extends LCCoreAbstractTest {
 		Assert.assertEquals(3, a.hours);
 		Assert.assertEquals(10, a.minutes);
 		Assert.assertEquals(180, a.seconds);
+		Assert.assertEquals(2, a.ranges.size());
+		Assert.assertEquals(new RangeInteger(10, 20), a.ranges.removeFirst());
+		Assert.assertEquals(new RangeInteger(31, 39), a.ranges.removeFirst());
+		Assert.assertEquals(new RangeInteger(51, 1664), a.range);
+		Assert.assertEquals(51, a.custom.intValue());
+		Assert.assertEquals(0, a.custom2.intValue());
 	}
 	
 }
