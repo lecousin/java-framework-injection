@@ -3,10 +3,15 @@ package net.lecousin.framework.injection;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.lecousin.framework.application.LCCore;
 import net.lecousin.framework.collections.LinkedArrayList;
 
 /** Injection context. */
 public class InjectionContext {
+	
+	public static InjectionContext getRoot() {
+		return LCCore.getApplication().getInstance(InjectionContext.class);
+	}
 
 	/** Constructor. */
 	public InjectionContext(InjectionContext parent) {
@@ -92,6 +97,11 @@ public class InjectionContext {
 			providerById.put(id,  provider);
 		}
 		providers.add(provider);
+	}
+	
+	/** Add a singleton by id, equivalent to call <code>add(new Singleton(type, instance, id))</code>. */
+	public void setObject(String id, Class<?> type, Object instance) throws InjectionException {
+		add(new Singleton(type, instance, id));
 	}
 	
 }

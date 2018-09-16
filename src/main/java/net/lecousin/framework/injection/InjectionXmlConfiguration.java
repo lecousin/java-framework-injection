@@ -16,7 +16,6 @@ import net.lecousin.framework.exception.NoException;
 import net.lecousin.framework.io.IO;
 import net.lecousin.framework.io.buffering.PreBufferedReadable;
 import net.lecousin.framework.io.provider.IOProvider;
-import net.lecousin.framework.io.provider.IOProviderFromPathUsingClassloader;
 import net.lecousin.framework.properties.Property;
 import net.lecousin.framework.util.ClassUtil;
 import net.lecousin.framework.util.UnprotectedStringBuffer;
@@ -34,9 +33,7 @@ public final class InjectionXmlConfiguration {
 	/** Configure the given InjectionContext with the XML file. */
 	@SuppressWarnings("resource")
 	public static ISynchronizationPoint<Exception> configure(InjectionContext ctx, String filename) {
-		ClassLoader cl = LCCore.getApplication().getClassLoader();
-		IOProviderFromPathUsingClassloader iop = new IOProviderFromPathUsingClassloader(cl);
-		IOProvider.Readable provider = iop.get(filename);
+		IOProvider.Readable provider = LCCore.getApplication().getClassLoader().getIOProvider(filename);
 		if (provider == null)
 			return new SynchronizationPoint<>(new FileNotFoundException(filename));
 		try {
