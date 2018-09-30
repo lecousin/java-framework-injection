@@ -7,6 +7,7 @@ import net.lecousin.framework.injection.InjectionContext;
 import net.lecousin.framework.injection.InjectionException;
 import net.lecousin.framework.injection.InjectionSerializationRule;
 import net.lecousin.framework.injection.ObjectMethod;
+import net.lecousin.framework.injection.ObjectValueFromString;
 
 import java.util.Arrays;
 
@@ -70,19 +71,19 @@ public class TestBasics extends LCCoreAbstractTest {
 			// ok
 		}
 		try {
-			Injection.create(context, NotInstantiable1.class, Arrays.asList("not a number"), null, null);
+			Injection.create(context, NotInstantiable1.class, Arrays.asList(new ObjectValueFromString("not a number")), null, null);
 			throw new AssertionError("Should throw an error for class NotInstantiable");
 		} catch (InjectionException e) {
 			// ok
 		}
 		try {
-			Injection.create(context, NotInstantiable2.class, Arrays.asList("not a number"), null, null);
+			Injection.create(context, NotInstantiable2.class, Arrays.asList(new ObjectValueFromString("not a number")), null, null);
 			throw new AssertionError("Should throw an error for class NotInstantiable");
 		} catch (InjectionException e) {
 			// ok
 		}
 		try {
-			Injection.create(context, NotInstantiable3.class, Arrays.asList("not a number"), null, null);
+			Injection.create(context, NotInstantiable3.class, Arrays.asList(new ObjectValueFromString("not a number")), null, null);
 			throw new AssertionError("Should throw an error for class NotInstantiable");
 		} catch (InjectionException e) {
 			// ok

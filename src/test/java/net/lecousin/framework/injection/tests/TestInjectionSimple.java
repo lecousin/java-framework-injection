@@ -8,9 +8,9 @@ import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
 import net.lecousin.framework.core.test.LCCoreAbstractTest;
 import net.lecousin.framework.injection.Injection;
 import net.lecousin.framework.injection.InjectionContext;
-import net.lecousin.framework.injection.InjectionXmlConfiguration;
 import net.lecousin.framework.injection.test.simple.IMySingleton;
 import net.lecousin.framework.injection.test.simple.IProvided;
+import net.lecousin.framework.injection.test.simple.IToto;
 import net.lecousin.framework.injection.test.simple.MySingletonDev;
 import net.lecousin.framework.injection.test.simple.MySingletonProd;
 import net.lecousin.framework.injection.test.simple.ProvidedDev;
@@ -22,6 +22,7 @@ import net.lecousin.framework.injection.test.simple.TitiProd;
 import net.lecousin.framework.injection.test.simple.TotoDev;
 import net.lecousin.framework.injection.test.simple.TotoProd;
 import net.lecousin.framework.injection.test.simple.WithDependencies;
+import net.lecousin.framework.injection.xml.InjectionXmlConfiguration;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -126,6 +127,23 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 	}
 	
 	@Test(timeout=30000)
+	public void testSingletonByType() throws Exception {
+		// DEV
+		Object mySingleton = ctxDev.getObject(IToto.class);
+		Assert.assertTrue(mySingleton instanceof TotoDev);
+		TataDev dev = ((TotoDev)mySingleton).getTata();
+		Assert.assertEquals("this is the string in dev", dev.getStr());
+		Assert.assertEquals(51, dev.getI());
+		
+		// PROD
+		mySingleton = ctxProd.getObject(IToto.class);
+		Assert.assertTrue(mySingleton instanceof TotoProd);
+		TataProd prod = ((TotoProd)mySingleton).getTata();
+		Assert.assertEquals("this is the string in prod", prod.getStr());
+		Assert.assertEquals(-52, prod.getI());
+	}
+	
+	@Test(timeout=30000)
 	public void testSingletonWithInjectedAttribute() throws Exception {
 		// DEV
 		Object mySingleton = ctxDev.getObjectById("titi");
@@ -133,7 +151,10 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		TitiDev dev = (TitiDev)mySingleton;
 		Assert.assertEquals("this is the string in dev", dev.getTata().getStr());
 		Assert.assertEquals(51, dev.getTata().getI());
+		Assert.assertEquals("this is the string in dev", dev.getTata2().getStr());
+		Assert.assertEquals(51, dev.getTata2().getI());
 		Assert.assertTrue(dev.getToto() instanceof TotoDev);
+		Assert.assertTrue(dev.getToto2() instanceof TotoDev);
 		TataDev tataDev = ((TotoDev)dev.getToto()).getTata();
 		Assert.assertEquals("this is the string in dev", tataDev.getStr());
 		Assert.assertEquals(51, tataDev.getI());
@@ -144,7 +165,10 @@ public class TestInjectionSimple extends LCCoreAbstractTest {
 		TitiProd prod = (TitiProd)mySingleton;
 		Assert.assertEquals("this is the string in prod", prod.getTata().getStr());
 		Assert.assertEquals(-52, prod.getTata().getI());
+		Assert.assertEquals("this is the string in prod", prod.getTata2().getStr());
+		Assert.assertEquals(-52, prod.getTata2().getI());
 		Assert.assertTrue(prod.getToto() instanceof TotoProd);
+		Assert.assertTrue(prod.getToto2() instanceof TotoProd);
 		TataProd tataProd = ((TotoProd)prod.getToto()).getTata();
 		Assert.assertEquals("this is the string in prod", tataProd.getStr());
 		Assert.assertEquals(-52, tataProd.getI());

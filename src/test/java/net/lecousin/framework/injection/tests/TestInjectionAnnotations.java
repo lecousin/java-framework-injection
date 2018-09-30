@@ -11,7 +11,6 @@ import net.lecousin.framework.core.test.LCCoreAbstractTest;
 import net.lecousin.framework.injection.Inject;
 import net.lecousin.framework.injection.Injection;
 import net.lecousin.framework.injection.InjectionContext;
-import net.lecousin.framework.injection.InjectionXmlConfiguration;
 import net.lecousin.framework.injection.test.annotations.Impl1Dev;
 import net.lecousin.framework.injection.test.annotations.Impl1Prod;
 import net.lecousin.framework.injection.test.annotations.Impl2Dev;
@@ -29,6 +28,7 @@ import net.lecousin.framework.injection.test.annotations.noscan.ITest;
 import net.lecousin.framework.injection.test.annotations.noscan.TestDev;
 import net.lecousin.framework.injection.test.annotations.noscan.TestProd;
 import net.lecousin.framework.injection.test.annotations.prod.Impl4Prod;
+import net.lecousin.framework.injection.xml.InjectionXmlConfiguration;
 
 public class TestInjectionAnnotations extends LCCoreAbstractTest {
 

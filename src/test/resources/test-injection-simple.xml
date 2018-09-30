@@ -50,12 +50,24 @@
 		<class name="net.lecousin.framework.injection.test.simple.TitiDev">
 			<property name="env" value="DEV"/>
 			<attribute name="toto" ref="toto"/>
-			<attribute name="tata" fromSingleton="toto" fromAttribute="tata"/>
+			<attribute name="toto2" refType="net.lecousin.framework.injection.test.simple.IToto"/>
+			<attribute name="tata">
+				<from ref="toto" attribute="tata"/>
+			</attribute>
+			<attribute name="tata2">
+				<from refType="net.lecousin.framework.injection.test.simple.IToto" attribute="tata"/>
+			</attribute>
 		</class>
 		<class name="net.lecousin.framework.injection.test.simple.TitiProd">
 			<property name="env" value="PROD"/>
 			<attribute name="toto" ref="toto"/>
-			<attribute name="tata" fromSingleton="toto" fromAttribute="tata"/>
+			<attribute name="toto2" refType="net.lecousin.framework.injection.test.simple.IToto"/>
+			<attribute name="tata">
+				<from ref="toto" attribute="tata"/>
+			</attribute>
+			<attribute name="tata2">
+				<from refType="net.lecousin.framework.injection.test.simple.IToto" attribute="tata"/>
+			</attribute>
 			<attribute name="provided" class="net.lecousin.framework.injection.test.simple.ProvidedProd">
 				<attribute name="env" value="TEST"/>
 			</attribute>

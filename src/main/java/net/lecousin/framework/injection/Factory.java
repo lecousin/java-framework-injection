@@ -6,8 +6,11 @@ import java.util.List;
 public class Factory extends ObjectProvider {
 
 	/** Constructor. */
-	public Factory(Class<?> baseType, Class<?> implType, ObjectMethod initMethod, List<ObjectAttribute> attributes, String id) {
-		super(baseType, id);
+	public Factory(
+		InjectionContext ctx, Class<?> baseType, Class<?> implType,
+		ObjectMethod initMethod, List<ObjectAttribute> attributes, String id
+	) {
+		super(ctx, baseType, id);
 		this.implType = implType;
 		this.initMethod = initMethod;
 		this.attributes = attributes;
@@ -18,8 +21,12 @@ public class Factory extends ObjectProvider {
 	protected List<ObjectAttribute> attributes;
 	
 	@Override
-	public Object provide(InjectionContext ctx) throws InjectionException {
+	public Object provide() throws InjectionException {
 		return Injection.create(ctx, implType, initMethod, attributes);
+	}
+	
+	@Override
+	public void close() {
 	}
 	
 }

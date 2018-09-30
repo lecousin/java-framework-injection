@@ -1,5 +1,6 @@
 package net.lecousin.framework.injection;
 
+import net.lecousin.framework.application.Application;
 import net.lecousin.framework.application.LCCore;
 import net.lecousin.framework.plugins.CustomExtensionPoint;
 
@@ -8,7 +9,10 @@ public class Init implements CustomExtensionPoint {
 
 	/** Constructor automatically called. */
 	public Init() {
-		LCCore.getApplication().setInstance(InjectionContext.class, new InjectionContext());
+		InjectionContext appCtx = new InjectionContext();
+		Application app = LCCore.getApplication();
+		app.setInstance(InjectionContext.class, appCtx);
+		app.toClose(appCtx);
 	}
 	
 	@Override

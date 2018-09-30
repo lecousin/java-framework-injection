@@ -6,9 +6,9 @@ import org.junit.Test;
 import net.lecousin.framework.concurrent.synch.ISynchronizationPoint;
 import net.lecousin.framework.core.test.LCCoreAbstractTest;
 import net.lecousin.framework.injection.InjectionContext;
-import net.lecousin.framework.injection.InjectionXmlConfiguration;
 import net.lecousin.framework.injection.test.attributes.AttributesContainer;
 import net.lecousin.framework.injection.test.attributes.AttributesInterface;
+import net.lecousin.framework.injection.xml.InjectionXmlConfiguration;
 import net.lecousin.framework.math.RangeInteger;
 
 public class TestInjectionAttributes extends LCCoreAbstractTest {

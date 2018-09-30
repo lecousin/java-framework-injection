@@ -1,6 +1,5 @@
 package net.lecousin.framework.injection;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,13 +9,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import net.lecousin.framework.application.Application;
+import net.lecousin.framework.collections.ArrayUtil;
 import net.lecousin.framework.io.serialization.SerializationClass;
 import net.lecousin.framework.log.Logger;
 import net.lecousin.framework.math.IntegerUnit;
@@ -47,12 +44,14 @@ public final class Injection {
 	}
 
 	/** Create an object to be injected. */
-	public static Object create(InjectionContext ctx, Class<?> clazz, List<String> params, ObjectMethod initMethod, List<ObjectAttribute> attrs)
-	throws InjectionException {
+	@SuppressWarnings("unchecked")
+	public static <T> T create(
+		InjectionContext ctx, Class<T> clazz, List<ObjectValue> params, ObjectMethod initMethod, List<ObjectAttribute> attrs
+	) throws InjectionException {
 		if (params == null) params = new ArrayList<>(0);
 		if (attrs == null) attrs = new ArrayList<>(0);
 		Constructor<?>[] ctors = clazz.getConstructors(); // returns only public ones
-		Object bean = null;
+		T bean = null;
 		// search constructor
 		for (Constructor<?> ctor : ctors) {
 			Class<?>[] types = ctor.getParameterTypes();
@@ -61,7 +60,7 @@ public final class Injection {
 			Type[] genericTypes = ctor.getGenericParameterTypes();
 			Annotation[][] annotations = ctor.getParameterAnnotations();
 			for (int i = 0; i < types.length; ++i) {
-				try { objects[i] = createObjectFromString(types[i], genericTypes[i], params.get(i), annotations[i]); }
+				try { objects[i] = params.get(i).create(ctx, types[i], genericTypes[i], annotations[i]); }
 				catch (InjectionException e) {
 					objects = null;
 					break;
@@ -69,7 +68,7 @@ public final class Injection {
 			}
 			if (objects == null) continue;
 		
-			try { bean = ctor.newInstance(objects); }
+			try { bean = (T)ctor.newInstance(objects); }
 			catch (Exception e) {
 				throw new InjectionException("Error in constructor while instantiating " + clazz.getName(), e);
 			}
@@ -87,7 +86,7 @@ public final class Injection {
 					throw new InjectionException("Error calling method " + m.getName() + " on class " + clazz.getName());
 				}
 		if (initMethod != null)
-			try { call(bean, initMethod); }
+			try { call(ctx, bean, initMethod); }
 			catch (Throwable t) {
 				throw new InjectionException("Error calling method " + initMethod.getName() + " on class " + clazz.getName());
 			}
@@ -96,8 +95,8 @@ public final class Injection {
 	
 	/** Create an object from a string value. */
 	@SuppressWarnings("unchecked")
-	public static Object createObjectFromString(
-		Class<?> type, Type genericType, String value, Annotation[] annotations
+	public static <T> T createObjectFromString(
+		Class<T> type, Type genericType, String value, Annotation[] annotations
 	) throws InjectionException {
 		if ("null".equals(value))
 			return null;
@@ -111,9 +110,9 @@ public final class Injection {
 				}
 			}
 		if (String.class.equals(type))
-			return value;
+			return (T)value;
 		if (boolean.class.equals(type) || Boolean.class.equals(type))
-			return "true".equalsIgnoreCase(value) ? Boolean.TRUE : Boolean.FALSE;
+			return (T)("true".equalsIgnoreCase(value) ? Boolean.TRUE : Boolean.FALSE);
 		if (long.class.equals(type) || Long.class.equals(type) ||
 			int.class.equals(type) || Integer.class.equals(type) ||
 			short.class.equals(type) || Short.class.equals(type) ||
@@ -153,20 +152,20 @@ public final class Injection {
 			}
 			
 			if (long.class.equals(type) || Long.class.equals(type))
-				return Long.valueOf(val);
+				return (T)Long.valueOf(val);
 			if (int.class.equals(type) || Integer.class.equals(type)) {
 				if (val >= Integer.MIN_VALUE && val <= Integer.MAX_VALUE)
-					return Integer.valueOf((int)val);
+					return (T)Integer.valueOf((int)val);
 				throw new InjectionException("Invalid integer value " + val + ": does not fit integer limits");
 			}
 			if (short.class.equals(type) || Short.class.equals(type)) {
 				if (val >= Short.MIN_VALUE && val <= Short.MAX_VALUE)
-					return Short.valueOf((short)val);
+					return (T)Short.valueOf((short)val);
 				throw new InjectionException("Invalid short value " + val + ": does not fit short limits");
 			}
 			if (byte.class.equals(type) || Byte.class.equals(type)) {
 				if (val >= Byte.MIN_VALUE && val <= Byte.MAX_VALUE)
-					return Byte.valueOf((byte)val);
+					return (T)Byte.valueOf((byte)val);
 				throw new InjectionException("Invalid byte value " + val + ": does not fit byte limits");
 			}
 		}
@@ -189,7 +188,7 @@ public final class Injection {
 				String[] values = value.split(",");
 				for (String val : values)
 					col.add(createObjectFromString((Class<?>)genericType, null, val, annotations));
-				return col;
+				return (T)col;
 			} catch (InjectionException e1) {
 				// may be the type provide parsing features
 				try {
@@ -198,6 +197,15 @@ public final class Injection {
 					throw e1;
 				}
 			}
+		}
+		
+		if (type.isArray()) {
+			@SuppressWarnings("rawtypes")
+			List list = new LinkedList<>();
+			String[] values = value.split(",");
+			for (String val : values)
+				list.add(createObjectFromString(type.getComponentType(), null, val, annotations));
+			return (T)list.toArray(ArrayUtil.createGenericArrayOf(list.size(), type.getComponentType()));
 		}
 		
 		// may be the type provide parsing features
@@ -214,7 +222,7 @@ public final class Injection {
 		Class<?> cl = instance.getClass();
 		Method setter = ClassUtil.getSetter(cl, name);
 		if (setter != null) {
-			Object o = attribute.create(
+			Object o = attribute.getValue().create(
 				ctx, setter.getParameterTypes()[0], setter.getGenericParameterTypes()[0], setter.getAnnotations());
 			if (o != null)
 				try { setter.invoke(instance, o); }
@@ -231,12 +239,11 @@ public final class Injection {
 		if (f != null) {
 			if (!f.isAccessible())
 				f.setAccessible(true);
-			Object o = attribute.create(ctx, f.getType(), f.getGenericType(), f.getAnnotations());
-			if (o != null || attribute.isExplicitlyNull())
-				try { f.set(instance, o); }
-				catch (IllegalAccessException e) {
-					throw new InjectionException("Cannot access to attribute " + name + " on class " + cl.getName());
-				}
+			Object o = attribute.getValue().create(ctx, f.getType(), f.getGenericType(), f.getAnnotations());
+			try { f.set(instance, o); }
+			catch (IllegalAccessException e) {
+				throw new InjectionException("Cannot access to attribute " + name + " on class " + cl.getName());
+			}
 			return;
 		}
 		throw new InjectionException("Unknown attribute " + name + " on class " + cl.getName());
@@ -272,7 +279,7 @@ public final class Injection {
 	}
 	
 	/** Call a method on an instance. */
-	public static void call(Object instance, ObjectMethod method) throws Exception {
+	public static void call(InjectionContext ctx, Object instance, ObjectMethod method) throws Exception {
 		Method m = ClassUtil.getMethod(instance.getClass(), method.getName(), method.getParameters().size());
 		if (m == null) return;
 		Class<?>[] types = m.getParameterTypes();
@@ -280,7 +287,7 @@ public final class Injection {
 		Type[] genericTypes = m.getGenericParameterTypes();
 		Annotation[][] annotations = m.getParameterAnnotations();
 		for (int i = 0; i < types.length; ++i)
-			objects[i] = createObjectFromString(types[i], genericTypes[i], method.getParameters().get(i), annotations[i]);
+			objects[i] = method.getParameters().get(i).create(ctx, types[i], genericTypes[i], annotations[i]);
 		m.invoke(instance, objects);
 	}
 	
@@ -315,54 +322,15 @@ public final class Injection {
 	public static void scanPackage(InjectionContext ctx, Application app, String pkgName, boolean singletons) throws Exception {
 		Logger logger = app.getLoggerFactory().getLogger(Injection.class);
 		if (logger.debug()) logger.debug("Scanning package " + pkgName);
-		List<File> files = app.getLibrariesManager().getLibrariesLocations();
-		for (File f : files) {
-			if (f.isDirectory())
-				scanDirectoryPackage(ctx, app, pkgName, singletons, f, logger);
-			else
-				scanJarPackage(ctx, app, pkgName, singletons, f, logger);
-		}
-	}
-	
-	private static void scanDirectoryPackage(
-		InjectionContext ctx, Application app, String pkgName, boolean singletons, File classDir, Logger logger
-	) throws Exception {
-		if (logger.debug()) logger.debug("Search package " + pkgName + " in library " + classDir.getAbsolutePath());
-		String pkgPath = pkgName.replace('.', '/');
-		File dir = new File(classDir, pkgPath);
-		if (!dir.exists()) return;
-		if (logger.debug()) logger.debug("Package " + pkgName + " found in directory " + dir.getAbsolutePath());
-		File[] files = dir.listFiles();
-		if (files == null) return;
-		for (File f : files) {
-			if (f.isDirectory()) continue;
-			if (!f.getName().endsWith(".class")) continue;
-			String className = f.getName();
-			className = className.substring(0, className.length() - 6);
-			Class<?> cl = app.getClassLoader().loadClass(pkgName + '.' + className);
-			scanClass(ctx, app, singletons, cl, logger);
-		}
-	}
-	
-	private static void scanJarPackage(
-		InjectionContext ctx, Application app, String pkgName, boolean singletons, File jarFile, Logger logger
-	) throws Exception {
-		if (logger.debug()) logger.debug("Search package " + pkgName + " in JAR file " + jarFile.getAbsolutePath());
-		String pkgPath = pkgName.replace('.', '/') + '/';
-		try (ZipFile jar = new ZipFile(jarFile)) {
-			Enumeration<? extends ZipEntry> entries = jar.entries();
-			while (entries.hasMoreElements()) {
-				ZipEntry f = entries.nextElement();
-				if (f.isDirectory()) continue;
-				String name = f.getName();
-				if (!name.startsWith(pkgPath)) continue;
-				if (!name.endsWith(".class")) continue;
-				name = name.substring(0, name.length() - 6);
-				name = name.replace('/', '.');
-				Class<?> cl = app.getClassLoader().loadClass(name);
-				scanClass(ctx, app, singletons, cl, logger);
+		StringBuilder errors = new StringBuilder();
+		app.getLibrariesManager().scanLibraries(pkgName, false, null, null, (cl) -> {
+			try { scanClass(ctx, app, singletons, cl, logger); }
+			catch (Exception e) {
+				errors.append(e.getMessage()).append("\r\n");
 			}
-		}
+		});
+		if (errors.length() > 0)
+			throw new Exception(errors.toString());
 	}
 	
 	private static void scanClass(
@@ -397,8 +365,8 @@ public final class Injection {
 				return;
 		}
 		if (logger.debug()) logger.debug("Injectable class found: " + cl.getName());
-		if (singleton)
-			ctx.add(new SingletonOnDemand(type, new Provider<Object>() {
+		if (singleton) {
+			ctx.add(new SingletonOnDemand(ctx, type, new Provider<Object>() {
 				@Override
 				public Object provide() {
 					try {
@@ -407,9 +375,9 @@ public final class Injection {
 						throw new RuntimeException("Unable to create singleton to be injected", e);
 					}
 				}
-			}, id.length() > 0 ? id : null));
-		else
-			ctx.add(new Factory(type, cl, null, new ArrayList<>(0), id.length() > 0 ? id : null));
+			}, id.length() > 0 ? id : null, null));
+		} else
+			ctx.add(new Factory(ctx, type, cl, null, new ArrayList<>(0), id.length() > 0 ? id : null));
 	}
 	
 }

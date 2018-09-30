@@ -20,6 +20,7 @@
 			<xsd:element name="import" type="Import" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:choice>
 	</xsd:complexType>
+	
 	<xsd:complexType name="ObjectProvider">
 		<xsd:sequence>
 			<xsd:element name="class" type="InstanceProvider" minOccurs="0" maxOccurs="unbounded"/>
@@ -27,58 +28,92 @@
 		<xsd:attribute name="type" type="xsd:string" use="optional"/>
 		<xsd:attribute name="id" type="xsd:string" use="optional"/>
 	</xsd:complexType>
+	
 	<xsd:complexType name="InstanceProvider">
 		<xsd:complexContent>
 			<xsd:extension base="Conditioned">
 				<xsd:sequence>
 					<xsd:element name="attribute" type="ObjectAttribute" minOccurs="0" maxOccurs="unbounded"/>
 					<xsd:element name="init-method" type="Method" minOccurs="0" maxOccurs="1"/>
+					<xsd:element name="destroy-method" type="Method" minOccurs="0" maxOccurs="1"/>
 				</xsd:sequence>
 				<xsd:attribute name="name" type="xsd:string"/>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
 	<xsd:complexType name="PropertyMatch">
 		<xsd:attribute name="name" type="xsd:string"/>
 		<xsd:attribute name="value" type="xsd:string"/>
 	</xsd:complexType>
+	
 	<xsd:complexType name="Conditioned">
 		<xsd:sequence>
 			<xsd:element name="property" type="PropertyMatch" minOccurs="0" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
-	<xsd:complexType name="ObjectAttribute">
-		<xsd:sequence>
-			<!-- If attribute class is specified, those are parameters of the constructor -->
-			<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+	
+	<xsd:complexType name="ObjectValue">
+		<xsd:choice>
+			<!-- If attribute class is specified -->
+			<xsd:sequence>
+				<!-- parameters of the constructor -->
+				<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="ObjectValue"/>
+				<!-- attributes to set -->
+				<xsd:element name="attribute" type="ObjectAttribute" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<!-- To reference an attribute in an object -->
+			<xsd:element name="from" minOccurs="1" maxOccurs="1">
 				<xsd:complexType>
-					<xsd:attribute name="value" type="xsd:string"/>
+					<!-- Reference to a singleton -->
+					<xsd:attribute name="ref" type="xsd:string" use="optional"/>
+					<!-- Reference to a singleton by type -->
+					<xsd:attribute name="refType" type="xsd:string" use="optional"/>
+					<xsd:attribute name="attribute" type="xsd:string"/>
 				</xsd:complexType>
 			</xsd:element>
-			<!-- If attribute class is specified, those are attributes to set -->
-			<xsd:element name="attribute" type="ObjectAttribute" minOccurs="0" maxOccurs="unbounded"/>
-		</xsd:sequence>
-		<xsd:attribute name="name" type="xsd:string"/>
+			<!-- A collection of elements -->
+			<xsd:element name="list">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="element" type="ObjectValue" minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<!-- A map of elements -->
+			<xsd:element name="map">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="entry" type="ObjectAttribute" minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:choice>
 		<!-- To inject a fixed value such as a string or an integer -->
 		<xsd:attribute name="value" type="xsd:string" use="optional"/>
 		<!-- To instantiate a type -->
 		<xsd:attribute name="class" type="xsd:string" use="optional"/>
 		<!-- Reference to a singleton or a factory -->
 		<xsd:attribute name="ref" type="xsd:string" use="optional"/>
-		<!-- To take it from an existing singleton -->
-		<xsd:attribute name="fromSingleton" type="xsd:string" use="optional"/>
-		<xsd:attribute name="fromAttribute" type="xsd:string" use="optional"/>
+		<!-- Reference to a singleton or a factory by type -->
+		<xsd:attribute name="refType" type="xsd:string" use="optional"/>
 	</xsd:complexType>
+	
+	<xsd:complexType name="ObjectAttribute">
+		<xsd:complexContent>
+			<xsd:extension base="ObjectValue">
+				<xsd:attribute name="name" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:complexType name="Method">
 		<xsd:sequence>
-			<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
-				<xsd:complexType>
-					<xsd:attribute name="value" type="xsd:string"/>
-				</xsd:complexType>
-			</xsd:element>
+			<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="ObjectValue"/>
 		</xsd:sequence>
 		<xsd:attribute name="name" type="xsd:string"/>
 	</xsd:complexType>
+	
 	<xsd:complexType name="ScanPackage">
 		<xsd:complexContent>
 			<xsd:extension base="Conditioned">
@@ -87,6 +122,7 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
+	
 	<xsd:complexType name="Import">
 		<xsd:complexContent>
 			<xsd:extension base="Conditioned">

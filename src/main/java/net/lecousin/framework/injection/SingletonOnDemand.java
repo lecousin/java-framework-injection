@@ -6,15 +6,15 @@ import net.lecousin.framework.util.Provider;
 public class SingletonOnDemand extends Singleton {
 
 	/** Constructor. */
-	public SingletonOnDemand(Class<?> type, Provider<?> provider, String id) {
-		super(type, null, id);
+	public SingletonOnDemand(InjectionContext ctx, Class<?> type, Provider<?> provider, String id, ObjectMethod destroy) {
+		super(ctx, type, null, id, destroy);
 		this.provider = provider;
 	}
 	
 	protected Provider<?> provider;
 	
 	@Override
-	public Object provide(InjectionContext ctx) {
+	public Object provide() {
 		if (instance == null && provider != null) {
 			instance = provider.provide();
 			provider = null; // let's garbage collection do its work
