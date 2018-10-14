@@ -45,7 +45,7 @@ public final class InjectionXmlConfiguration {
 		else
 			bio = new PreBufferedReadable(xml, 16384, Task.PRIORITY_RATHER_IMPORTANT, 16384, Task.PRIORITY_NORMAL, 4);
 		SynchronizationPoint<Exception> result = new SynchronizationPoint<>();
-		XMLStreamReader.start(bio, 15000).listenInline(
+		XMLStreamReader.start(bio, 8192, 4).listenInline(
 			(reader) -> {
 				new Task.Cpu<Void, NoException>("Parsing Injection XML file", Task.PRIORITY_NORMAL) {
 					@Override
