@@ -15,6 +15,12 @@ import org.junit.Test;
 
 public class TestBasics extends LCCoreAbstractTest {
 
+	@Test(timeout=30000)
+	public void testBasics() {
+		InjectionContext.getRoot();
+		new InjectionContext().close();
+	}
+	
 	@SuppressWarnings("unused")
 	@Test(timeout=30000)
 	public void testInjectionException() {

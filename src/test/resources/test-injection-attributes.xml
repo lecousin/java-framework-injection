@@ -17,6 +17,13 @@
 			<attribute name="str" value="ok"/>
 			<attribute name="integers" value="1,23,456,7890"/>
 			<attribute name="strings" value="ok,3,null,ok again"/>
+			<attribute name="integers2" value="12,-98,2897"/>
+			<attribute name="integers3">
+				<list>
+					<element value="123"/>
+					<element value="-456"/>
+				</list>
+			</attribute>
 			<attribute name="days" value="48h"/>
 			<attribute name="hours" value="3h"/>
 			<attribute name="minutes" value="600 seconds"/>
@@ -25,6 +32,19 @@
 			<attribute name="range" value="[51-1664]"/>
 			<attribute name="custom" value="hello"/>
 			<attribute name="custom2" value="world"/>
+			<attribute name="strList">
+				<list>
+					<element value="str1"/>
+					<element value="str2"/>
+				</list>
+			</attribute>
+			<attribute name="map">
+				<map>
+					<entry name="key1" value="value1"/>
+					<entry name="key2" value="value2"/>
+				</map>
+			</attribute>
+			<destroy-method name="destroy"/>
 		</class>
 	</Singleton>
 	

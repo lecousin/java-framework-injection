@@ -2,6 +2,8 @@ package net.lecousin.framework.injection.test.attributes;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import net.lecousin.framework.locale.annotations.LocalizableProperty;
 import net.lecousin.framework.math.FragmentedRangeInteger;
@@ -30,6 +32,8 @@ public class AttributesContainer implements AttributesInterface {
 	
 	public ArrayList<Integer> integers;
 	public ArrayList<String> strings;
+	public Integer[] integers2;
+	public Integer[] integers3;
 	
 	@LocalizableProperty(key="test", name = "test")
 	@Unit(TimeUnit.Day.class)
@@ -60,6 +64,12 @@ public class AttributesContainer implements AttributesInterface {
 		public Integer parse(String string) throws ParseException {
 			return "hello".equals(string) ? Integer.valueOf(51) : Integer.valueOf(0);
 		}
+	}
+	
+	public List<String> strList;
+	public Map<String, String> map;
+	
+	public void destroy() {
 	}
 	
 }

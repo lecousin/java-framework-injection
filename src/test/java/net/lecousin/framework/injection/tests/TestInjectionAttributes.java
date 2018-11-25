@@ -41,6 +41,15 @@ public class TestInjectionAttributes extends LCCoreAbstractTest {
 		Assert.assertEquals("3", a.strings.get(1));
 		Assert.assertNull(a.strings.get(2));
 		Assert.assertEquals("ok again", a.strings.get(3));
+		Assert.assertNotNull(a.integers2);
+		Assert.assertEquals(3, a.integers2.length);
+		Assert.assertEquals(12, a.integers2[0].intValue());
+		Assert.assertEquals(-98, a.integers2[1].intValue());
+		Assert.assertEquals(2897, a.integers2[2].intValue());
+		Assert.assertNotNull(a.integers3);
+		Assert.assertEquals(2, a.integers3.length);
+		Assert.assertEquals(123, a.integers3[0].intValue());
+		Assert.assertEquals(-456, a.integers3[1].intValue());
 		Assert.assertEquals(2, a.days);
 		Assert.assertEquals(3, a.hours);
 		Assert.assertEquals(10, a.minutes);
@@ -51,6 +60,14 @@ public class TestInjectionAttributes extends LCCoreAbstractTest {
 		Assert.assertEquals(new RangeInteger(51, 1664), a.range);
 		Assert.assertEquals(51, a.custom.intValue());
 		Assert.assertEquals(0, a.custom2.intValue());
+		Assert.assertNotNull(a.strList);
+		Assert.assertEquals(2, a.strList.size());
+		Assert.assertEquals("str1", a.strList.get(0));
+		Assert.assertEquals("str2", a.strList.get(1));
+		Assert.assertNotNull(a.map);
+		Assert.assertEquals(2, a.map.size());
+		Assert.assertEquals("value1", a.map.get("key1"));
+		Assert.assertEquals("value2", a.map.get("key2"));
 	}
 	
 }
